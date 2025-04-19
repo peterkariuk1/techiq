@@ -36,33 +36,94 @@ nav {
   outline: none;
   box-shadow: 1px 2px 5px #f5d7ac67;
 }
-nav .right{
-    display: flex;
-    align-items: center;
-    gap: 30px;
+nav .right {
+  display: flex;
+  align-items: center;
+  gap: 30px;
 }
 nav .right div:hover {
-    cursor: pointer;
-    transform:scale(1.04);
+  cursor: pointer;
+  transform: scale(1.04);
 }
-nav .right div img{
-    width: 30px;
-    height: 30px;
+nav .right div img {
+  width: 30px;
+  height: 30px;
 }
-.cart-container{
-    position: relative;
+.cart-container {
+  position: relative;
 }
-.cart-counter-container{
-    position: absolute;
-    top: -2px;
-    left: 18px;
-    background-color:var(--primary-color);
-    color: var(--tertiary-color);
-    font-size: 12px;
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
+.cart-counter-container {
+  position: absolute;
+  top: -2px;
+  left: 18px;
+  background-color: var(--primary-color);
+  color: var(--tertiary-color);
+  font-size: 12px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@media (max-width: 870px) {
+  .loris-logo {
+    width: 130px;
+    height: 70px;
+  }
+  nav {
     align-items: center;
+  }
+}
+@media (max-width: 730px) {
+  .searchbox input {
+    padding: 12px;
+    width: 13rem;
+  }
+  nav {
+    padding: 0px 20px 0px 20px;
+    align-items: center;
+  }
+}
+@media (max-width: 580px) {
+  nav {
+    padding: 0px 10px 0px 10px;
+  }
+  .search-button-container {
+    padding: 4.5px 5px;
+  }
+  .loris-logo {
+    width: 70px;
+    height: 20px;
+  }
+}
+@media (max-width: 470px) {
+  nav .right {
+    gap: 10px;
+  }
+  nav {
+    padding: 0px 8px 0px 4px;
+  }
+  .searchbox input {
+    padding: 7px;
+    width: 10rem;
+  }
+
+  .search-button-container img {
+    width: 20px;
+  }
+}@media (max-width: 340px) {
+  nav .right {
+    gap: 6px;
+  }
+  
+  .searchbox input {
+    padding: 7px;
+    width: 6rem;
+  }
+
+  .search-button-container img {
+    width: 20px;
+  }
 }
