@@ -1,0 +1,68 @@
+@import "../styles/App.css";
+
+nav {
+  display: flex;
+  justify-content: space-between;
+  padding: 0px 80px 0px 20px;
+  position: fixed;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+  height: 70px;
+  background-color: var(--secondary-color);
+}
+.searchbox {
+  display: flex;
+  align-items: center;
+}
+.search-button-container {
+  background-color: var(--primary-color);
+  padding: 4.5px 12px;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  margin-left: -8px;
+  cursor: pointer;
+}
+.search-button-container:hover {
+  background-color: #d5b383;
+}
+.searchbox input {
+  padding: 12px;
+  width: 18rem;
+  border: 2px solid #ab8e66;
+  border-radius: 6px;
+}
+.searchbox input:focus {
+  outline: none;
+  box-shadow: 1px 2px 5px #f5d7ac67;
+}
+nav .right{
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+nav .right div:hover {
+    cursor: pointer;
+    transform:scale(1.04);
+}
+nav .right div img{
+    width: 30px;
+    height: 30px;
+}
+.cart-container{
+    position: relative;
+}
+.cart-counter-container{
+    position: absolute;
+    top: -2px;
+    left: 18px;
+    background-color:var(--primary-color);
+    color: var(--tertiary-color);
+    font-size: 12px;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

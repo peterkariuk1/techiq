@@ -1,6 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Orbitron:wght@400..900&display=swap');
 :root{
-  
+  --primary-color: #ab8e66;
+  --secondary-color: #000000;
+  --tertiary-color: #fffcf0;
 }
 body{
   margin: 0;
+  font-family: 'Montserrat', 'sans serif';
 }
