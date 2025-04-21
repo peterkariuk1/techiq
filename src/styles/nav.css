@@ -8,6 +8,7 @@ nav {
   left: 0px;
   right: 0px;
   top: 0px;
+  z-index: 2;
   height: 70px;
   background-color: var(--secondary-color);
 }
@@ -113,11 +114,12 @@ nav .right div img {
   .search-button-container img {
     width: 20px;
   }
-}@media (max-width: 340px) {
+}
+@media (max-width: 340px) {
   nav .right {
     gap: 6px;
   }
-  
+
   .searchbox input {
     padding: 7px;
     width: 6rem;
