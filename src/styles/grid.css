@@ -1,0 +1,139 @@
+@import "./App.css";
+
+.items-grid {
+  height: 20vw;
+}
+.paginated-grid-section {
+  padding: 10px 20px;
+  text-align: start;
+}
+
+.grid-title {
+  font-size: 18px;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+.grid-title span {
+  font-family: "Great Vibes";
+  color: var(--primary-color);
+  font-size: 16px;
+  font-weight: 400;
+}
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 25px;
+  margin-bottom: 30px;
+}
+
+.grid-item {
+  background-color: #fefefe;
+  border-radius: 1px;
+  padding: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.002);
+  border: 1px solid #dddddd94;
+  position: relative;
+}
+.grid-item:hover {
+  border: 1px solid #ab8e66;
+  cursor: pointer;
+}
+.cart-options {
+  display: flex;
+  opacity: 0;
+  justify-content: center;
+  gap: 20px;
+  align-items: center;
+  background-color: var(--primary-color);
+  padding: 5px 12px;
+  border-radius: 20px;
+  position: absolute;
+  left: 20%;
+  right: 20%;
+  top: 25%;
+  transform: translate3d(0, 2rem, 0);
+  visibility: hidden;
+  transition: 0.7s ease-in-out opacity, 0.5s ease-in-out transform;
+}
+.grid-item:hover .cart-options {
+  display: flex;
+  opacity: 1;
+  visibility: visible;
+  transform: translate3d(0, 0, 0);
+}
+.share--icon,
+.more--icon {
+  width: 16px;
+  height: 16px;
+}
+.cart--icon {
+  width: 26px;
+  height: 26px;
+}
+.new-icon {
+  position: absolute;
+  background-color: var(--primary-color);
+  color: var(--tertiary-color);
+  font-size: 8px;
+  font-weight: 700;
+  padding: 4px 7px;
+  border-radius: 10px;
+  top: 10px;
+  left: 10px;
+}
+
+.grid-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 1px;
+}
+
+.grid-name {
+  margin: 10px 6px 0px 6px;
+  font-weight: 700;
+  color: var(--primary-color);
+  text-align: center;
+}
+.grid-item-price {
+  margin-bottom: 30px;
+  margin-top: 0px;
+  margin-left: 1.5rem;
+  font-weight: 600;
+  font-size: 13px;
+}
+.category-name {
+  font-weight: 300;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+}
+.category-name img {
+  width: 20px;
+  height: 20px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.pagination button {
+  padding: 8px 12px;
+  border: none;
+  background: #eee;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.3s;
+}
+
+.pagination button:hover {
+  background: #ddd;
+}
+
+.pagination .active {
+  background: black;
+  color: white;
+}

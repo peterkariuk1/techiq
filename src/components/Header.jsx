@@ -1,3 +1,4 @@
+import {Link} from 'react-router-dom';
 import logoImage from "../assets/lorislogo.png";
 import searchIcon from "../assets/search.png";
 import cartIcon from "../assets/cart.png";
@@ -15,9 +16,11 @@ const Header = () => {
         </div>
       </div>
       <div className="right">
+        <Link to='/admin'>
         <div className="profile-container">
           <img src={profileIcon} />
         </div>
+        </Link>
         <div className="cart-container">
           <img src={cartIcon} />
           <div className="cart-counter-container">

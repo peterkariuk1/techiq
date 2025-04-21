@@ -93,12 +93,13 @@
   top: 50%;
 }
 .filter-price-container {
-  background-color: #f1f0f09f;
+  background-color: #f1f0f023;
   display: flex;
   gap: 20px;
   justify-content: center;
   align-items: center;
   padding: 10px;
+  border-bottom: 1px solid #9b9b9b7d;
 }
 .price--container {
   display: flex;
