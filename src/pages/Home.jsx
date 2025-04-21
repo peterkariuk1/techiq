@@ -3,7 +3,7 @@ import Banner from "../components/Banner.jsx";
 import Filters from "../components/Filters.jsx";
 import Grid from "../components/Grid.jsx";
 import Footer from "../components/Footer.jsx";
-import '../styles/App.css'
+
 const Home = () => {
   return (
     <div className="home-page">
