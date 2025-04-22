@@ -65,10 +65,17 @@
 .more--icon {
   width: 16px;
   height: 16px;
+  transition: 0.2s ease-in-out transform;
 }
 .cart--icon {
   width: 26px;
   height: 26px;
+  transition: 0.2s ease-in-out transform;
+}
+.share--icon:hover,
+.cart--icon:hover,
+.more--icon:hover {
+  transform: scale(1.2);
 }
 .new-icon {
   position: absolute;
