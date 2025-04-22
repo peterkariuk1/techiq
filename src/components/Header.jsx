@@ -59,8 +59,8 @@ const Header = () => {
       setTimeout(() => {
         setIndex((prev) => (prev + 1) % placeholders.length);
         setAnimate("bounce-in");
-      }, 500);
-    }, 3000);
+      }, 200);
+    }, 4000);
 
     return () => clearInterval(interval);
   }, [inputValue]);
@@ -74,7 +74,7 @@ const Header = () => {
       if (timeoutId) clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
         setIsVisible(true);
-      }, 400); // reappear after 200ms idle
+      }, 400); // reappear after 500ms idle
     };
 
     window.addEventListener("scroll", handleScroll);
