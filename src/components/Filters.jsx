@@ -11,12 +11,12 @@ import autoPerfumeImage from "../assets/lorisaautoperfume.jpg";
 // Sample categories
 const categories = [
   { id: 1, name: "Diffusers", image: diffuserImage },
-  { id: 1, name: "Frequences", image: frequencesImage },
-  { id: 1, name: "Niche", image: nicheImage },
-  { id: 1, name: "Body Care", image: bodyCareImage },
-  { id: 1, name: "Auto Perfume", image: autoPerfumeImage },
-  { id: 1, name: "Loris Perfume", image: perfumeImage },
-  { id: 1, name: "Cologne", image: cologneImage },
+  { id: 2, name: "Frequences", image: frequencesImage },
+  { id: 3, name: "Niche", image: nicheImage },
+  { id: 4, name: "Body Care", image: bodyCareImage },
+  { id: 5, name: "Auto Perfume", image: autoPerfumeImage },
+  { id: 6, name: "Loris Perfume", image: perfumeImage },
+  { id: 8, name: "Cologne", image: cologneImage },
 ];
 
 const Filters = () => {
@@ -66,9 +66,9 @@ const Filters = () => {
             // value="500"
           />
         </div>
-        <div class="sort-dropdown">
-          <button class="dropbtn">Sort by:</button>
-          <div class="dropdown-content">
+        <div className="sort-dropdown">
+          <button className="dropbtn">Sort by:</button>
+          <div className="dropdown-content">
             <p>Price: High to Low</p>
             <p> Price: Low to High</p>
             <p>Newest Arrivals</p>
