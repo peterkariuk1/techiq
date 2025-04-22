@@ -1,0 +1,105 @@
+@import "./App.css";
+
+.login-page {
+  width: 100vw;
+  height: 100vh;
+  background-image: url("../assets/loginbc.jpg");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.backdrop-filter-container {
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(6px);
+  background-color: #000000df;
+}
+.inner-login-container {
+  width: 80vw;
+  height: 75vh;
+  backdrop-filter: blur(30px);
+  border-radius: 20px;
+  box-shadow: 1px 2px 8px #ab8e6623;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.inner-login-container .top {
+  display: flex;
+  justify-content: center;
+}
+.inner-login-container .top img {
+  width: 100px;
+  height: 50px;
+}
+.inner-login-container .center {
+  color: var(--primary-color);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+.inner-login-container .center h3 {
+  margin-bottom: 5px;
+}
+.inner-login-container .center p {
+  color: var(--tertiary-color);
+  margin-top: 0px;
+}.inner-login-container .center h2 {
+  color: var(--tertiary-color);
+  margin-top: 0px;
+  font-size: 11px;
+  font-weight: 300;
+  cursor: pointer;
+}
+.inner-login-container .center input {
+  background: #ffffff;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(222, 233, 255, 1) 100%
+  );
+  border: none;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+}
+.inner-login-container .center input::placeholder {
+  color: var(--secondary-color);
+}
+.inner-login-container .center input:focus {
+  outline: 1px solid #ffffff;
+  transform: scale(1.02);
+}
+.inner-login-container .center button {
+    background: #000000;
+    background: radial-gradient(
+      circle,
+      rgb(46, 46, 46) 0%,
+      rgb(33, 33, 33) 100%
+    );
+    padding: 5px;
+    font-weight: 300;
+    font-size: 18px;
+    color: var(--tertiary-color);
+    border: 1px solid #ab8e66;
+    border-radius: 5px;
+    transition: .4s ease background;
+    margin-bottom: 6px;
+}
+.inner-login-container .center button:hover {
+    background: #000000;
+    background: radial-gradient(
+      circle,
+      rgb(67, 67, 67) 0%,
+      rgb(33, 33, 33) 100%
+    );
+    transform: scale(1.017);
+    cursor: pointer;
+}
+.register-names{
+    display: flex;
+    gap:10px;
+}

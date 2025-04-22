@@ -1,14 +1,33 @@
 @import "../styles/App.css";
 
+
+
+.header {
+  position: sticky;
+  transition: .5s opacity 0.5s ease, .3s transform 0.7s ease;
+}
+
+.header.hidden {
+  opacity: 0;
+  transform: translateY(-20px);
+  pointer-events: none;
+}
+
+.header.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
 nav {
   display: flex;
   justify-content: space-between;
   padding: 0px 80px 0px 20px;
-  position: fixed;
+  /* position: fixed; */
   left: 0px;
   right: 0px;
   top: 0px;
-  z-index: 2;
+  z-index: 22;
   height: 70px;
   background-color: var(--secondary-color);
 }
@@ -18,21 +37,74 @@ nav {
 }
 .search-button-container {
   background-color: var(--primary-color);
-  padding: 4.5px 12px;
+  padding: 0px 12px;
   border-top-right-radius: 20px;
   border-bottom-right-radius: 20px;
   margin-left: -8px;
   cursor: pointer;
 }
+.search-button-container img{
+  width: 25px;
+}
 .search-button-container:hover {
   background-color: #d5b383;
 }
-.searchbox input {
-  padding: 12px;
+.search-input {
+  padding: 6px 12px;
   width: 18rem;
-  border: 2px solid #ab8e66;
+  border: 1px solid #ab8e66;
   border-radius: 6px;
 }
+/*  */
+.searchbox {
+  position: relative;
+
+}
+
+
+.placeholder-text {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6e6e6e;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  font-size: 13px;
+}
+
+.bounce-in {
+  animation: bounceIn 0.7s ease;
+  opacity: 1;
+}
+
+.fade-out {
+  animation: fadeOut 0.5s ease forwards;
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: translateY(-50%) scale(0.9);
+    opacity: 0;
+  }
+  60% {
+    transform: translateY(-60%) scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-50%) scale(1);
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+/*  */
 .searchbox input:focus {
   outline: none;
   box-shadow: 1px 2px 5px #f5d7ac67;
@@ -79,7 +151,7 @@ nav .right div img {
 }
 @media (max-width: 730px) {
   .searchbox input {
-    padding: 12px;
+    padding: 6px 12px;
     width: 13rem;
   }
   nav {
@@ -91,13 +163,11 @@ nav .right div img {
   nav {
     padding: 0px 10px 0px 10px;
   }
-  .search-button-container {
-    padding: 4.5px 5px;
-  }
   .loris-logo {
     width: 70px;
     height: 20px;
   }
+  
 }
 @media (max-width: 470px) {
   nav .right {
@@ -107,7 +177,7 @@ nav .right div img {
     padding: 0px 8px 0px 4px;
   }
   .searchbox input {
-    padding: 7px;
+    padding: 3.65px;
     width: 10rem;
   }
 
