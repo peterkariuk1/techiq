@@ -1,5 +1,5 @@
 import '../styles/loader.css'
-import loaderAnimation from '../assets/loaderAnimation.webm'
+import loaderAnimation from '../assets/loaderanimation.webm'
 const Loader = () => {
     return (
         <div className='loader-container'>
