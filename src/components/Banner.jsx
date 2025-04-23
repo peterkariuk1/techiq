@@ -23,7 +23,6 @@ const bannerImages = [
     theme: "light",
     text1: "Scents with a story",
     text2: "Elegant perfumes crafted just for you",
-   
   },
   {
     url: banner3,
@@ -49,7 +48,6 @@ const bannerImages = [
     theme: "light",
     text1: "Feel expensive, effortlessly",
     text2: "Elegant perfumes for every mood",
-   
   },
   {
     url: banner7,
@@ -60,13 +58,13 @@ const bannerImages = [
   {
     url: banner8,
     theme: "light",
-    text1: "Mystery in every spray",
-    text2: "Our signature diffuser collection",
+    text1: "Ignite your senses",
+text2: "Niche candles made to mesmerize"
   },
   {
     url: banner9,
     theme: "light",
-// Correct
+    // Correct
     text1: "Freshen up your space",
     text2: "Limited-time room spray deals",
   },
@@ -89,7 +87,15 @@ const Banner = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const scrollToGrid = () => {
 
+    setTimeout(() => {
+      const gridElement = document.getElementById("grid-section");
+      if (gridElement) {
+        gridElement.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 100); // small delay after state update to let DOM update
+  };
 
   return (
     <div className="banner-container">
@@ -101,13 +107,10 @@ const Banner = () => {
             backgroundImage: `url(${img.url})`,
           }}
         >
-          {/* Setup for future text overlay */}
           <div className={`banner-overlay ${img.theme}-text`}>
-            <h1>
-              {img.text1}
-            </h1>
+            <h1>{img.text1}</h1>
             <h3> {img.text2}</h3>
-            <button className="cta-banner-button">Shop Now</button>
+            <button onClick={scrollToGrid} className="cta-banner-button">Shop Now</button>
           </div>
         </div>
       ))}

@@ -2,7 +2,7 @@
 
 .header {
   position: sticky;
-  transition: .5s opacity 0.8s ease, .3s transform 0.9s ease;
+  transition: .2s opacity 0.5s ease, .3s transform 0.5s ease;
 }
 
 .header.hidden {

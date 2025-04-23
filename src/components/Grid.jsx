@@ -190,14 +190,23 @@ const Grid = () => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const visibleProducts = products.slice(startIndex, startIndex + itemsPerPage);
 
+
+
+
+
   // Page navigation
   const goToPage = (pageNum) => {
     if (pageNum >= 1 && pageNum <= totalPages) {
       setCurrentPage(pageNum);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+      setTimeout(() => {
+        const gridElement = document.getElementById("grid-section");
+        if (gridElement) {
+          gridElement.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100); // small delay after state update to let DOM update
     }
   };
-
   // Capitalize every word in the item's title
   function capitalizeWords(str) {
     if (!str) return '';
@@ -241,7 +250,7 @@ const Grid = () => {
   };
 
   return (
-    <div className="paginated-grid-section">
+    <div id='grid-section' className="paginated-grid-section">
       {/* Add notification component at the top */}
       {notification.visible && (
         <div className="cart-notification">
@@ -296,7 +305,7 @@ const Grid = () => {
                   </div>
                 </div>
                 <img
-                  loading="lazy"
+                  // loading="lazy"
                   src={getProductImage(product)}
                   alt={product.name || 'Product Image'}
                   className="grid-image"
