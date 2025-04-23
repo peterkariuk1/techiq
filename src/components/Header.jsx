@@ -70,16 +70,27 @@ const Header = () => {
   // Detect scroll to hide/show header
   useEffect(() => {
     let timeoutId = null;
-
+    let lastScrollY = window.scrollY;
+  
     const handleScroll = () => {
-      setIsVisible(false);
-
-      if (timeoutId) clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
+      const currentScrollY = window.scrollY;
+  
+      if (currentScrollY > lastScrollY) {
+        // Scrolling down
+        setIsVisible(false);
+  
+        if (timeoutId) clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+          setIsVisible(true);
+        }, 100); // Reappear after idle
+      } else {
+        // Scrolling up, keep header visible
         setIsVisible(true);
-      }, 200); // reappear after 500ms idle
+      }
+  
+      lastScrollY = currentScrollY;
     };
-
+  
     window.addEventListener("scroll", handleScroll);
     return () => {
       clearTimeout(timeoutId);
