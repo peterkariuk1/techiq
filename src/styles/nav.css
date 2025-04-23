@@ -1,7 +1,5 @@
 @import "../styles/App.css";
 
-
-
 .header {
   position: sticky;
   transition: .5s opacity 0.8s ease, .3s transform 0.9s ease;
