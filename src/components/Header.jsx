@@ -5,6 +5,7 @@ import searchIcon from "../assets/search.png";
 import cartIcon from "../assets/cart.png";
 import profileIcon from "../assets/user.png";
 import "../styles/nav.css";
+import { useCart } from "../context/CartContext";
 
 const placeholders = [
   "Loris Peach Reed Diffuser",
@@ -48,6 +49,7 @@ const Header = () => {
   const [animate, setAnimate] = useState("bounce-in");
   const [inputValue, setInputValue] = useState("");
   const [isVisible, setIsVisible] = useState(true);
+  const { cartItemCount } = useCart(); // Get cart item count from context
 
   // Rotate placeholder if no input
   useEffect(() => {
@@ -64,6 +66,7 @@ const Header = () => {
 
     return () => clearInterval(interval);
   }, [inputValue]);
+
   // Detect scroll to hide/show header
   useEffect(() => {
     let timeoutId = null;
@@ -83,6 +86,7 @@ const Header = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
   return (
     <nav className={`header ${isVisible ? "visible" : "hidden"}`}>
       <img className="loris-logo" src={logoImage} alt="Loris Logo" />
@@ -109,12 +113,17 @@ const Header = () => {
             <img src={profileIcon} alt="Profile" />
           </div>
         </Link>
-        <div className="cart-container">
-          <img src={cartIcon} alt="Cart" />
-          <div className="cart-counter-container">
-            <p>3</p>
+        <Link to="/checkout">
+          <div className="cart-container">
+            <img src={cartIcon} alt="Cart" />
+            {/* Only show counter if there are items */}
+            {cartItemCount > 0 && (
+              <div className="cart-counter-container">
+                <p>{cartItemCount}</p>
+              </div>
+            )}
           </div>
-        </div>
+        </Link>
       </div>
     </nav>
   );
