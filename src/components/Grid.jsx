@@ -7,13 +7,14 @@ import seeMoreIcon from "../assets/see-more.png";
 import { db } from "../../firebase/firebaseConfig.js";
 import { collection, getDocs, query, limit, orderBy } from "firebase/firestore";
 import { useCart } from "../context/CartContext";
+import { useSearchParams } from "react-router-dom";
 
 const Grid = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const itemsPerPage = 24;
+  const itemsPerPage = 18;
 
   // Modal state
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -28,6 +29,15 @@ const Grid = () => {
   });
 
   const { addToCart } = useCart();
+
+  // Add search params from URL
+  const [searchParams] = useSearchParams();
+
+  // Get filter values from URL
+  const minPrice = searchParams.get("min_price") ? parseInt(searchParams.get("min_price")) : 0;
+  const maxPrice = searchParams.get("max_price") ? parseInt(searchParams.get("max_price")) : Infinity;
+  const category = searchParams.get("category") || "";
+  const sortBy = searchParams.get("sort") || "newest";
 
   // Function to show notification
   const showNotification = (product, qty = 1) => {
@@ -155,12 +165,23 @@ const Grid = () => {
         // Reference to products collection
         const productsRef = collection(db, "products");
 
-        // Create query
-        const productsQuery = query(
-          productsRef,
-          orderBy("created_at", "desc"),
-          limit(1000)
-        );
+        // Create query - still fetch all products and filter in JS
+        // This approach allows for more complex filtering without multiple Firebase queries
+        let productsQuery;
+
+        // Choose sort order based on URL parameter
+        switch(sortBy) {
+          case "price-high-to-low":
+            productsQuery = query(productsRef, orderBy("selling_price", "desc"), limit(1000));
+            break;
+          case "price-low-to-high":
+            productsQuery = query(productsRef, orderBy("selling_price", "asc"), limit(1000));
+            break;
+          case "newest":
+          default:
+            productsQuery = query(productsRef, orderBy("created_at", "desc"), limit(1000));
+            break;
+        }
 
         // Get products
         const querySnapshot = await getDocs(productsQuery);
@@ -171,11 +192,7 @@ const Grid = () => {
           ...doc.data(),
         }));
 
-        // Calculate total pages
-        const total = Math.ceil(productsData.length / itemsPerPage);
-
         setProducts(productsData);
-        setTotalPages(total);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -184,15 +201,55 @@ const Grid = () => {
     }
 
     fetchProducts();
-  }, []);
+  }, [sortBy]); // Re-fetch when sort order changes
+
+  // Filter products based on URL parameters
+  const filteredProducts = products.filter(product => {
+    const productPrice = product.selling_price || 0;
+    
+    // Price filter
+    if (productPrice < minPrice || productPrice > maxPrice) {
+      return false;
+    }
+    
+    // Category filter (improved to handle case and partial matches)
+    if (category && product.category) {
+      // First try exact match (case insensitive)
+      if (product.category.toLowerCase() === category.toLowerCase()) {
+        return true;
+      }
+      
+      // Then try contains match
+      if (product.category.toLowerCase().includes(category.toLowerCase())) {
+        return true;
+      }
+      
+      // Also check sub-category if available
+      if (product["sub-category"] && 
+          product["sub-category"].toLowerCase().includes(category.toLowerCase())) {
+        return true;
+      }
+      
+      // No match found
+      return false;
+    }
+    
+    // If no category filter or product has no category, include it
+    return true;
+  });
+
+  // Calculate total pages based on filtered products
+  useEffect(() => {
+    const total = Math.ceil(filteredProducts.length / itemsPerPage);
+    setTotalPages(total);
+
+    // Reset to page 1 when filters change
+    setCurrentPage(1);
+  }, [filteredProducts.length]);
 
   // Calculate which products to display based on current page
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const visibleProducts = products.slice(startIndex, startIndex + itemsPerPage);
-
-
-
-
+  const visibleProducts = filteredProducts.slice(startIndex, startIndex + itemsPerPage);
 
   // Page navigation
   const goToPage = (pageNum) => {
@@ -207,6 +264,7 @@ const Grid = () => {
       }, 100); // small delay after state update to let DOM update
     }
   };
+
   // Capitalize every word in the item's title
   function capitalizeWords(str) {
     if (!str) return '';
@@ -273,7 +331,16 @@ const Grid = () => {
       )}
 
       <h2 className="grid-title">
-        All Products <span>Find your Signature Scent</span>
+        {category ? (
+          <>
+            {category} Products
+            <span>{filteredProducts.length} items found</span>
+          </>
+        ) : filteredProducts.length === products.length ? (
+          <>All Products <span>Find your Signature Scent</span></>
+        ) : (
+          <>Filtered Results <span>({filteredProducts.length} items found)</span></>
+        )}
       </h2>
 
       {loading ? (

@@ -1,5 +1,6 @@
 import "../styles/filters.css";
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import diffuserImage from "../assets/lorisdiffusers.jpg";
 import frequencesImage from "../assets/lorisfrequence.png";
 import nicheImage from "../assets/lorisniche.jpeg";
@@ -11,16 +12,60 @@ import autoPerfumeImage from "../assets/lorisaautoperfume.jpg";
 // Sample categories
 const categories = [
   { id: 1, name: "Diffusers", image: diffuserImage },
-  { id: 2, name: "Frequences", image: frequencesImage },
+  { id: 2, name: "Frequence", image: frequencesImage },
   { id: 3, name: "Niche", image: nicheImage },
   { id: 4, name: "Body Care", image: bodyCareImage },
-  { id: 5, name: "Auto Perfume", image: autoPerfumeImage },
-  { id: 6, name: "Loris Perfume", image: perfumeImage },
+  { id: 5, name: "Auto Perfumes", image: autoPerfumeImage },
+  { id: 6, name: "Loris Perfumes", image: perfumeImage },
   { id: 8, name: "Cologne", image: cologneImage },
 ];
 
 const Filters = () => {
   const scrollRef = useRef(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  // Get initial filter values from URL or use defaults
+  const [minPrice, setMinPrice] = useState(() => {
+    const urlMinPrice = searchParams.get("min_price");
+    return urlMinPrice ? parseInt(urlMinPrice) : 0;
+  });
+  
+  const [maxPrice, setMaxPrice] = useState(() => {
+    const urlMaxPrice = searchParams.get("max_price");
+    return urlMaxPrice ? parseInt(urlMaxPrice) : 30000;
+  });
+  
+  const [selectedCategory, setSelectedCategory] = useState(() => {
+    return searchParams.get("category") || "";
+  });
+  
+  const [sortBy, setSortBy] = useState(() => {
+    return searchParams.get("sort") || "newest";
+  });
+
+  // Function to update URL parameters
+  const updateUrlParams = () => {
+    const params = {};
+    
+    // Only add parameters that have values
+    if (minPrice > 0) params.min_price = minPrice;
+    if (maxPrice < 30000) params.max_price = maxPrice;
+    if (selectedCategory) params.category = selectedCategory;
+    if (sortBy !== "newest") params.sort = sortBy;
+    
+    // Update URL without causing a page reload
+    setSearchParams(params);
+  };
+
+  // Update URL when filters change
+  useEffect(() => {
+    // Add a small delay to avoid too many URL updates when typing
+    const timer = setTimeout(() => {
+      updateUrlParams();
+    }, 500);
+    
+    return () => clearTimeout(timer);
+  }, [minPrice, maxPrice, selectedCategory, sortBy]);
 
   // Function to scroll left or right by fixed pixels
   const scroll = (direction) => {
@@ -33,6 +78,19 @@ const Filters = () => {
       });
     }
   };
+  
+  // Handle category selection
+  const handleCategoryClick = (categoryName) => {
+    setSelectedCategory(prev => prev === categoryName ? "" : categoryName);
+  };
+
+  // Clear all filters
+  const clearAllFilters = () => {
+    setMinPrice(0);
+    setMaxPrice(30000);
+    setSelectedCategory("");
+    setSortBy("newest");
+  };
 
   return (
     <div className="filters-section">
@@ -44,7 +102,11 @@ const Filters = () => {
         <div className="slider-wrapper">
           <div className="category-slider" ref={scrollRef}>
             {categories.map((cat) => (
-              <div className="category-card" key={cat.id}>
+              <div 
+                className={`category-card ${selectedCategory === cat.name ? 'selected' : ''}`}
+                key={cat.id}
+                onClick={() => handleCategoryClick(cat.name)}
+              >
                 <img src={cat.image} alt={cat.name} className="category-img" />
                 <p className="category-text">{cat.name}</p>
               </div>
@@ -57,29 +119,67 @@ const Filters = () => {
       </div>
       <div className="filter-price-container">
         <div className="price--container">
-           Filter by Price
+          Filter by Price
           <div className="max-min-price-inputs">
-            <input type="number" />
+            <input 
+              type="number" 
+              value={minPrice}
+              onChange={(e) => setMinPrice(Math.max(0, parseInt(e.target.value) || 0))}
+              placeholder="Min"
+            />
             -
-            <input type="number" />
+            <input 
+              type="number" 
+              value={maxPrice}
+              onChange={(e) => setMaxPrice(Math.max(minPrice, parseInt(e.target.value) || 0))}
+              placeholder="Max"
+            />
           </div>
-          <input
-            className="price-filter"
-            type="range"
-            // min="0"
-            // max="30000"
-            // value="500"
-          />
+          <div className="price-range-slider">
+            <input
+              className="price-filter"
+              type="range"
+              min="0"
+              max="30000"
+              value={minPrice}
+              onChange={(e) => setMinPrice(parseInt(e.target.value))}
+            />
+            <input
+              className="price-filter"
+              type="range"
+              min="0"
+              max="30000"
+              value={maxPrice}
+              onChange={(e) => setMaxPrice(parseInt(e.target.value))}
+            />
+          </div>
+          <div className="price-range-labels">
+            <span>KSh 0</span>
+            <span>KSh 30,000</span>
+          </div>
         </div>
         <div className="sort-dropdown">
-          <button className="dropbtn">Sort by:</button>
+          <button className="dropbtn">Sort by: {sortBy.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</button>
           <div className="dropdown-content">
-            <p>Price: High to Low</p>
-            <p> Price: Low to High</p>
-            <p>Newest Arrivals</p>
+            <p onClick={() => setSortBy("price-high-to-low")}>Price: High to Low</p>
+            <p onClick={() => setSortBy("price-low-to-high")}>Price: Low to High</p>
+            <p onClick={() => setSortBy("newest")}>Newest Arrivals</p>
           </div>
         </div>
       </div>
+      {selectedCategory && (
+        <div className="active-filters">
+          <span className="filter-tag">
+            {selectedCategory}
+            <button onClick={() => setSelectedCategory("")}>×</button>
+          </span>
+        </div>
+      )}
+      {(selectedCategory || minPrice > 0 || maxPrice < 30000 || sortBy !== "newest") && (
+        <button className="clear-all-filters" onClick={clearAllFilters}>
+          Clear All Filters
+        </button>
+      )}
     </div>
   );
 };
