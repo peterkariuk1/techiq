@@ -77,7 +77,7 @@ const Header = () => {
       if (timeoutId) clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
         setIsVisible(true);
-      }, 400); // reappear after 500ms idle
+      }, 200); // reappear after 500ms idle
     };
 
     window.addEventListener("scroll", handleScroll);
