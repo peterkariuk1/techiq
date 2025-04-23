@@ -13,7 +13,7 @@ const Grid = () => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const itemsPerPage = 24;
+  const itemsPerPage = 30;
 
   // Modal state
   const [selectedProduct, setSelectedProduct] = useState(null);

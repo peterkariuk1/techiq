@@ -9,7 +9,7 @@ const Banner = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % bannerImages.length);
-    }, 8000);
+    }, 12000);
 
     return () => clearInterval(interval);
   }, []);
@@ -20,7 +20,7 @@ const Banner = () => {
       if (gridElement) {
         gridElement.scrollIntoView({ behavior: "smooth" });
       }
-    }, 100); // small delay after state update to let DOM update
+    }, 5); // small delay after state update to let DOM update
   };
 
   return (
