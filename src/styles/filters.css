@@ -95,25 +95,32 @@
 .filter-price-container {
   background-color: #f1f0f023;
   display: flex;
-  gap: 20px;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  padding: 10px;
+  padding: 10px 30px;
   border-bottom: 1px solid #9b9b9b7d;
 }
 .price--container {
   display: flex;
   flex-direction: column;
   justify-content: start;
-  gap: 10px;
+  gap: 2px;
   font-weight: 600;
   font-size: 12px;
+}
+.max-min-price-inputs{
+  display: flex;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+.max-min-price-inputs input {
+  width: 88px;
 }
 
 .price-filter {
   -webkit-appearance: none;
   appearance: none;
-  width: 180px;
+  width: 200px;
   height: 10px;
   background: #d3d3d3;
   outline: 1px solid #ab8e66;

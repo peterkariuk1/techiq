@@ -57,12 +57,17 @@ const Filters = () => {
       </div>
       <div className="filter-price-container">
         <div className="price--container">
-          Price
+           Filter by Price
+          <div className="max-min-price-inputs">
+            <input type="number" />
+            -
+            <input type="number" />
+          </div>
           <input
             className="price-filter"
             type="range"
             // min="0"
-            // max="5000"
+            // max="30000"
             // value="500"
           />
         </div>
