@@ -232,16 +232,27 @@ const Header = () => {
   // Detect scroll to hide/show header - remains the same
   useEffect(() => {
     let timeoutId = null;
-
+    let lastScrollY = window.scrollY;
+  
     const handleScroll = () => {
-      setIsVisible(false);
-
-      if (timeoutId) clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
+      const currentScrollY = window.scrollY;
+  
+      if (currentScrollY > lastScrollY) {
+        // Scrolling down
+        setIsVisible(false);
+  
+        if (timeoutId) clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+          setIsVisible(true);
+        }, 100); // Reappear after idle
+      } else {
+        // Scrolling up, keep header visible
         setIsVisible(true);
-      }, 200);
+      }
+  
+      lastScrollY = currentScrollY;
     };
-
+  
     window.addEventListener("scroll", handleScroll);
     return () => {
       clearTimeout(timeoutId);
