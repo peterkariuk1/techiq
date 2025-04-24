@@ -47,6 +47,7 @@ function App() {
             <Route path="/reset" element={<Reset />}></Route>
             <Route path="/checkout" element={<Checkout />}></Route>
             <Route path="/product/:id" element={<Product />}></Route>
+            <Route path="/product/" element={<Product />}></Route>
             <Route path="*" element={<NotFound />}></Route>
             <Route path="/my-orders" element={<OrderTracking />}></Route>
             <Route path="/all-orders" element={<AdminOrders />}></Route>

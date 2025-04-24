@@ -43,7 +43,31 @@
   background-color: #ab8e6614;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   padding: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
 }
+
+.category-card.selected {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.category-card.selected::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: #d4af37;
+}
+
+.category-card.selected .category-text {
+  font-weight: 600;
+  color: #d4af37;
+}
+
 .category-card:hover .category-img {
   transform: scale(1.05);
   overflow: hidden;
@@ -151,6 +175,37 @@
   cursor: pointer;
 }
 
+.price-range-slider {
+  position: relative;
+  height: 30px;
+  width: 100%;
+  margin: 10px 0;
+}
+
+.price-range-slider input {
+  position: absolute;
+  width: 100%;
+  background: none;
+  pointer-events: none;
+  top: 0;
+  height: 100%;
+  outline: none;
+}
+
+.price-range-slider input::-webkit-slider-thumb {
+  pointer-events: all;
+  position: relative;
+  z-index: 1;
+}
+
+.price-range-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #777;
+  margin-top: 5px;
+}
+
 .dropbtn {
   background-color: #ab8e66;
   color: white;
@@ -196,6 +251,53 @@
 
 .sort-dropdown:hover .dropbtn {
   background-color: #937a58;
+}
+
+.active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 15px;
+  padding: 10px 0;
+  border-top: 1px solid #eee;
+}
+
+.filter-tag {
+  background-color: #f5f5f5;
+  padding: 6px 12px;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.filter-tag button {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #777;
+}
+
+.clear-all-filters {
+  margin-top: 10px;
+  background: none;
+  border: 1px solid #ddd;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #666;
+  transition: all 0.2s;
+}
+
+.clear-all-filters:hover {
+  background-color: #f5f5f5;
+  color: #333;
 }
 
 @media (max-width: 660px) {

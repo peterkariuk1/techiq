@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, useSearchParams, Link, useNavigate } from "react-router-dom";
 import { db } from "../../firebase/firebaseConfig.js";
 import { doc, getDoc } from "firebase/firestore";
 import { useCart } from "../context/CartContext.jsx";
@@ -9,7 +9,12 @@ import shareIcon from "../assets/share-icon.png";
 import categoryIcon from "../assets/category-icon.png";
 
 const Product = () => {
-  const { id } = useParams();
+  // Use both route params (for backward compatibility) and search params
+  const { id: routeId } = useParams();
+  const [searchParams] = useSearchParams();
+  const productId = searchParams.get("pid") || routeId; // Use query param or fallback to route param
+  const categoryFromUrl = searchParams.get("category");
+
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const [product, setProduct] = useState(null);
@@ -24,11 +29,17 @@ const Product = () => {
   // Fetch product data
   useEffect(() => {
     const fetchProduct = async () => {
+      if (!productId) {
+        setError("No product ID provided");
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
-        const productRef = doc(db, "products", id);
+        const productRef = doc(db, "products", productId);
         const productSnap = await getDoc(productRef);
-        
+
         if (productSnap.exists()) {
           setProduct({ id: productSnap.id, ...productSnap.data() });
         } else {
@@ -41,9 +52,9 @@ const Product = () => {
         setLoading(false);
       }
     };
-    
+
     fetchProduct();
-  }, [id]);
+  }, [productId]);
 
   // Update quantity
   const updateQuantity = (newQty) => {
@@ -56,12 +67,12 @@ const Product = () => {
   const handleAddToCart = () => {
     if (product) {
       addToCart(product, quantity);
-      
+
       setNotification({
         visible: true,
         message: `Added ${quantity} ${quantity > 1 ? 'items' : 'item'} to cart`,
       });
-      
+
       setTimeout(() => {
         setNotification(prev => ({ ...prev, visible: false }));
       }, 3000);
@@ -71,12 +82,12 @@ const Product = () => {
   // Share product
   const handleShare = async () => {
     if (!product) return;
-    
+
     const productUrl = `${window.location.origin}/product/${product.id}`;
     const title = capitalizeWords(product.name);
-    const text = product.description || 
+    const text = product.description ||
       `Check out this ${product.category || ''} perfume from Loris Kenya!`;
-    
+
     if (navigator.share) {
       try {
         await navigator.share({
@@ -90,12 +101,12 @@ const Product = () => {
     } else {
       try {
         await navigator.clipboard.writeText(productUrl);
-        
+
         setNotification({
           visible: true,
           message: 'Link copied to clipboard!',
         });
-        
+
         setTimeout(() => {
           setNotification(prev => ({ ...prev, visible: false }));
         }, 3000);
@@ -115,7 +126,7 @@ const Product = () => {
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
   }
-  
+
   const formatPrice = (price) => {
     if (price === undefined || price === null) return 'KSh 0';
     return `KSh ${Number(price).toLocaleString()}`;
@@ -123,22 +134,31 @@ const Product = () => {
 
   const getProductImage = (product) => {
     if (!product) return "https://placehold.co/300x300?text=No+Image";
-    
-    const imageUrl = 
-      product.image || 
-      product.image_url || 
+
+    const imageUrl =
+      product.image ||
+      product.image_url ||
       product.img ||
       product.thumbnail ||
       product.photo;
-      
+
     if (imageUrl && typeof imageUrl === 'string' && imageUrl.trim() !== '') {
       if (imageUrl.startsWith('/')) {
         return `https://pos.loriskenya.com${imageUrl}`;
       }
       return imageUrl;
     }
-    
+
     return "https://placehold.co/300x300?text=No+Image";
+  };
+
+  // Update the Back button to use the category if available
+  const handleBackNavigation = () => {
+    if (categoryFromUrl) {
+      navigate(`/?category=${encodeURIComponent(categoryFromUrl)}`);
+    } else {
+      navigate(-1); // Default fallback
+    }
   };
 
   if (loading) {
@@ -193,55 +213,55 @@ const Product = () => {
           </div>
         </div>
       )}
-      
+
       {/* Product Page Header */}
       <div className="product-page-header">
         <Link to="/">
           <img src={logoImage} alt="Loris Perfume" className="logo" />
         </Link>
       </div>
-      
+
       {/* Back to Products */}
       <div className="back-to-products">
-        <button onClick={() => navigate("/")} className="back-link">
-          {"<"} Back to Products
+        <button onClick={handleBackNavigation} className="back-link">
+          {"<"} Back to {categoryFromUrl ? `${categoryFromUrl} Products` : 'Products'}
         </button>
       </div>
 
       <div className="product-page-container">
         {/* Left: Product Image */}
         <div className="product-page-image">
-          <img 
-            src={getProductImage(product)} 
-            alt={product.name} 
+          <img
+            src={getProductImage(product)}
+            alt={product.name}
             onError={(e) => {
               e.target.onerror = null;
               e.target.src = "https://placehold.co/300x300?text=No+Image";
             }}
           />
         </div>
-        
+
         {/* Right: Product Details */}
         <div className="product-page-details">
           <h1 className="product-page-name">{capitalizeWords(product.name)}</h1>
-          
+
           <div className="product-page-category">
             <img src={categoryIcon} alt="Category" />
             <span>{product.category || 'Uncategorized'}</span>
             {product["sub-category"] && <span> - {product["sub-category"]}</span>}
           </div>
-          
+
           <div className="product-page-price">
             {formatPrice(product.selling_price)}
           </div>
-          
+
           {product.description && (
             <div className="product-page-description">
               <h3>Description</h3>
               <p>{product.description}</p>
             </div>
           )}
-          
+
           <div className="product-page-actions">
             <div className="product-page-quantity">
               <span>Quantity:</span>
@@ -251,17 +271,17 @@ const Product = () => {
                 <button onClick={() => updateQuantity(quantity + 1)}>+</button>
               </div>
             </div>
-            
+
             <button className="add-to-cart-btn" onClick={handleAddToCart}>
               Add to Cart
             </button>
-            
+
             <button className="product-share-btn" onClick={handleShare}>
               <img src={shareIcon} alt="Share" />
               Share
             </button>
           </div>
-          
+
           {product.sku_leave_blank_to_auto_generate_sku && (
             <div className="product-page-sku">
               SKU: {product.sku_leave_blank_to_auto_generate_sku}
