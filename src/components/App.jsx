@@ -14,6 +14,7 @@ import Loader from "../components/Loader.jsx";
 import NotFound from "../pages/NotFound.jsx";
 import OrderTracking from "../pages/OrderTracking.jsx";
 import AdminOrders from "../pages/AdminOrders.jsx";
+import Maintenance from "../pages/Maintenance.jsx";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -39,18 +40,19 @@ function App() {
       ) : (
         <CartProvider>
           <Routes>
-            <Route path="/" element={<Home />}></Route>
-            <Route path="/load-test" element={<Loader />}></Route>
+            {/* <Route path="/" element={<Home />}></Route>  */}
+            <Route path="/" element={<Maintenance />}></Route>
+             {/* <Route path="/load-test" element={<Loader />}></Route>
             <Route path="/admin" element={<Admin />}></Route>
             <Route path="/login" element={<Login />}></Route>
             <Route path="/register" element={<Register />}></Route>
             <Route path="/reset" element={<Reset />}></Route>
             <Route path="/checkout" element={<Checkout />}></Route>
             <Route path="/product/:id" element={<Product />}></Route>
-            <Route path="/product/" element={<Product />}></Route>
+            <Route path="/product/" element={<Product />}></Route> */}
             <Route path="*" element={<NotFound />}></Route>
-            <Route path="/my-orders" element={<OrderTracking />}></Route>
-            <Route path="/all-orders" element={<AdminOrders />}></Route>
+            {/* <Route path="/my-orders" element={<OrderTracking />}></Route>
+            <Route path="/all-orders" element={<AdminOrders />}></Route> */}
           </Routes>
         </CartProvider>
       )}
