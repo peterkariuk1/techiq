@@ -44,6 +44,7 @@ function App() {
             <Route path="/reset" element={<Reset />}></Route>
             <Route path="/checkout" element={<Checkout />}></Route>
             <Route path="/product/:id" element={<Product />}></Route>
+            <Route path="/product/" element={<Product />}></Route>
           </Routes>
         </CartProvider>
       )}

@@ -38,6 +38,7 @@ const Grid = () => {
   const maxPrice = searchParams.get("max_price") ? parseInt(searchParams.get("max_price")) : Infinity;
   const category = searchParams.get("category") || "";
   const sortBy = searchParams.get("sort") || "newest";
+  const searchQuery = searchParams.get("search") || "";
 
   // Function to show notification
   const showNotification = (product, qty = 1) => {
@@ -99,8 +100,8 @@ const Grid = () => {
 
   // Share product function
   const handleShare = async (product) => {
-    // Construct a shareable URL for the product
-    const productUrl = `${window.location.origin}/product/${product.id}`;
+    // Construct a shareable URL with the new format
+    const productUrl = `${window.location.origin}/product/?category=${encodeURIComponent(product.category || "Uncategorized")}&pid=${product.id}`;
     
     // Product details for sharing
     const title = capitalizeWords(product.name);
@@ -212,7 +213,7 @@ const Grid = () => {
       return false;
     }
     
-    // Category filter (improved to handle case and partial matches)
+    // Category filter
     if (category && product.category) {
       // First try exact match (case insensitive)
       if (product.category.toLowerCase() === category.toLowerCase()) {
@@ -230,11 +231,39 @@ const Grid = () => {
         return true;
       }
       
-      // No match found
+      // No match found for category
       return false;
     }
     
-    // If no category filter or product has no category, include it
+    // Search query filter (if no category is selected)
+    if (searchQuery && !category) {
+      const query = searchQuery.toLowerCase();
+      
+      // Search in name
+      if (product.name && product.name.toLowerCase().includes(query)) {
+        return true;
+      }
+      
+      // Search in category
+      if (product.category && product.category.toLowerCase().includes(query)) {
+        return true;
+      }
+      
+      // Search in description
+      if (product.description && product.description.toLowerCase().includes(query)) {
+        return true;
+      }
+      
+      // No match found for search query
+      return false;
+    }
+    
+    // Search query without category, it means the item didn't match
+    if (searchQuery && !category) {
+      return false;
+    }
+    
+    // Include the product if it passed all filters or no filters are active
     return true;
   });
 
@@ -331,7 +360,12 @@ const Grid = () => {
       )}
 
       <h2 className="grid-title">
-        {category ? (
+        {searchQuery ? (
+          <>
+            Search Results for "{searchQuery}"
+            <span>{filteredProducts.length} items found</span>
+          </>
+        ) : category ? (
           <>
             {category} Products
             <span>{filteredProducts.length} items found</span>
