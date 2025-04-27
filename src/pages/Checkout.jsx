@@ -70,7 +70,7 @@ const Checkout = () => {
       // Call backend to initiate STK Push
       const response = await axios.post(`${API_URL}/mpesa/initiate`, {
         phoneNumber: formData.mpesaPhone,
-        amount: 1, // Round to nearest shilling
+        amount: Math.round(total),
         orderId
       });
       
