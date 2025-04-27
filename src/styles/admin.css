@@ -2,3 +2,17 @@
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
 }
+
+.add-products div{
+    margin-bottom: 30px;
+}
+.admin-page{
+    padding: 20px;
+}
+.add-products p{
+    margin-bottom:6px;
+}
+.label-container{
+    display: flex;
+    flex-direction: column;
+}

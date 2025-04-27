@@ -316,6 +316,14 @@
   object-fit: contain;
   border-radius: 4px;
 }
+@media (max-width: 460px) {
+  .cart-options {
+    padding: 7px;
+    left: 33%;
+    right: 33%;
+  }
+  
+}
 
 @media (max-width: 768px) {
   .product-modal-container {
