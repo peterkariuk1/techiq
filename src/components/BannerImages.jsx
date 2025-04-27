@@ -1,14 +1,20 @@
-import banner1 from "../assets/banner1.jpg";
-import banner2 from "../assets/banner2.jpg";
-import banner3 from "../assets/banner3.jpg";
+import banner1 from "../assets/banner1small.jpg";
+import banner2 from "../assets/banner2small.jpg";
+import banner3 from "../assets/banner3small.jpg";
 import banner4 from "../assets/banner4B.jpg";
-import banner5 from "../assets/banner5.jpg";
-import banner6 from "../assets/banner6.jpg";
-import banner7 from "../assets/banner7.jpg";
-import banner8 from "../assets/banner8.jpg";
-import banner9 from "../assets/banner9.jpg";
+import banner5 from "../assets/banner5small.jpg";
+import banner6 from "../assets/banner6small.jpg";
+import banner7 from "../assets/banner7small.jpg";
+import banner8 from "../assets/banner8small.jpg";
+import banner9 from "../assets/banner9small.jpg";
 
 export  const bannerImages = [
+    {
+      url: banner4,
+      theme: "dark",
+      text1: "Smell different",
+      text2: "Explore our rare niche perfume collection",
+    },
     {
       url: banner1,
       theme: "light",
@@ -26,12 +32,6 @@ export  const bannerImages = [
       theme: "light",
       text1: "Your calm, bottled",
       text2: "Need a diffuser that chills *and* thrills?", // question
-    },
-    {
-      url: banner4,
-      theme: "dark",
-      text1: "Smell different",
-      text2: "Explore our rare niche perfume collection",
     },
     {
       url: banner5,
