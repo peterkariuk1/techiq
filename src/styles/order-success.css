@@ -1,0 +1,154 @@
+.order-success-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.success-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.success-header .logo {
+  height: 40px;
+}
+
+.success-container {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  text-align: center;
+}
+
+.success-icon-container {
+  margin-bottom: 20px;
+}
+
+.success-icon {
+  width: 80px;
+  height: 80px;
+  animation: scaleIn 0.5s ease-out;
+}
+
+@keyframes scaleIn {
+  0% {
+    transform: scale(0);
+  }
+  70% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.order-success-page h1 {
+  color: #d4af37;
+  margin-bottom: 30px;
+  font-size: 28px;
+}
+
+.order-details {
+  margin-bottom: 30px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid #eee;
+}
+
+.order-number {
+  font-weight: 600;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.order-number span {
+  color: #d4af37;
+}
+
+.order-date {
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.order-confirmation {
+  font-size: 16px;
+  line-height: 1.6;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.delivery-info,
+.next-steps {
+  margin-bottom: 30px;
+  text-align: left;
+}
+
+.delivery-info h2,
+.next-steps h2 {
+  font-size: 20px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.next-steps ul {
+  padding-left: 20px;
+  line-height: 1.8;
+}
+
+.actions {
+  margin: 40px 0;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.button {
+  padding: 12px 25px;
+  border-radius: 4px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+
+.button.primary {
+  background-color: #d4af37;
+  color: white;
+}
+
+.button.primary:hover {
+  background-color: #c9a42e;
+}
+
+.button.secondary {
+  background-color: #f5f5f5;
+  color: #555;
+  border: 1px solid #ddd;
+}
+
+.button.secondary:hover {
+  background-color: #eee;
+}
+
+.contact-info {
+  margin-top: 30px;
+  border-top: 1px solid #eee;
+  padding-top: 20px;
+  font-size: 14px;
+  color: #666;
+}
+
+@media (max-width: 600px) {
+  .success-container {
+    padding: 20px;
+  }
+
+  .actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .button {
+    width: 100%;
+  }
+}

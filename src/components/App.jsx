@@ -9,6 +9,8 @@ import Register from "../pages/Register.jsx";
 import Reset from "../pages/Reset.jsx";
 import Checkout from "../pages/Checkout.jsx";
 import Product from "../pages/Product.jsx";
+import OrderSuccess from "../pages/OrderSuccess.jsx";
+import Orders from "../pages/Orders.jsx";
 import { bannerImages } from "../components/BannerImages.jsx";
 import Loader from "../components/Loader.jsx";
 import NotFound from "../pages/NotFound.jsx";
@@ -51,9 +53,9 @@ function App() {
             <Route path="/checkout" element={<Checkout />}></Route>
             <Route path="/product/:id" element={<Product />}></Route>
             <Route path="/product/" element={<Product />}></Route>
+            <Route path="/order-success" element={<OrderSuccess />}></Route>
+            <Route path="/orders" element={<Orders />}></Route>
             <Route path="*" element={<NotFound />}></Route>
-            <Route path="/my-orders" element={<OrderTracking />}></Route>
-            <Route path="/all-orders" element={<AdminOrders />}></Route>
           </Routes>
         </CartProvider>
       )}
