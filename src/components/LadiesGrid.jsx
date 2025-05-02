@@ -34,7 +34,8 @@ const LadiesGrid = () => {
 
   return (
     <section className="paginated-grid-section">
-      <h2>Ladies Perfumes</h2>
+      <p className='generic-text'> Crafted just for her!</p>
+      <h2 className="title-mini-grid">Ladies Best Sellers</h2>
       <div className="grid-container">
         {visibleProducts.map((product) => {
           return (
@@ -97,7 +98,7 @@ const LadiesGrid = () => {
           );
         })}
       </div>
-      {!isAllLoaded && <button onClick={handleViewMore}>View More</button>}
+      {!isAllLoaded && <button className="view-collection-button" onClick={handleViewMore}>View Collection</button>}
     </section>
   );
 };

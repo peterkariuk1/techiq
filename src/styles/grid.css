@@ -4,10 +4,42 @@
   height: 20vw;
 }
 .paginated-grid-section {
-  padding: 10px 20px;
+  padding: 10px 30px 10px 30px;
   text-align: start;
+  border-bottom: 1px solid rgba(185, 185, 185, 0.168);
+  border-radius: 28%;
 }
+.generic-text {
+  font-size: 56px;
+  margin-bottom: -10px;
+  margin-top: 0px;
+  text-align: center;
+  color: var(--primary-color);
+  font-family: "Great Vibes";
+  font-weight: 100;
+}
+.title-mini-grid{
+  font-size: 32px;
+  font-weight: 200;
+  text-align: center;
+  margin-top: 5px;
 
+}
+.view-collection-button{
+  border-top: none;
+  border-bottom: 1px solid #ab8e66;
+  border-left: 1px solid #ab8e66;
+  border-right: 1px solid #ab8e66;
+  background-color: transparent;
+  cursor: pointer;
+  padding: 5px 20px;
+  display: flex;
+  justify-self: center;
+}
+.view-collection-button:hover{
+  transform: scale(1.019);
+  box-shadow: 1px 2px 4px rgba(175, 175, 175, 0.108);
+}
 .grid-title {
   font-size: 18px;
   margin-bottom: 10px;
@@ -21,10 +53,11 @@
 }
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-  column-gap:35px;
-  row-gap:15px;
-  margin-bottom: 30px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  column-gap: 15px;
+  row-gap: 25px;
+  margin-bottom: 20px;
+
 }
 
 .grid-item {
@@ -334,7 +367,6 @@
     left: 33%;
     right: 33%;
   }
-  
 }
 
 @media (max-width: 768px) {
@@ -342,20 +374,20 @@
     flex-direction: column;
     padding: 10px;
   }
-  
+
   .product-modal-image {
     margin-bottom: 20px;
   }
-  
-  .product-modal-details, 
+
+  .product-modal-details,
   .product-modal-image {
     padding: 10px;
   }
-  
+
   .product-modal-name {
     font-size: 20px;
   }
-  
+
   .product-modal-price {
     font-size: 20px;
   }
@@ -366,7 +398,7 @@
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   padding: 0;
   border-radius: 8px;
@@ -396,7 +428,7 @@
 
 .notification-icon {
   background-color: white;
-  color: #4CAF50;
+  color: #4caf50;
   width: 24px;
   height: 24px;
   border-radius: 50%;
