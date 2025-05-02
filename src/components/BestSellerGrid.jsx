@@ -34,7 +34,8 @@ const BestSellerGrid = () => {
 
   return (
     <section className="paginated-grid-section">
-      <h2>Best Seller Perfumes</h2>
+      <p className='generic-text'> Discover our most popular picks!</p>
+      <h2 className="title-mini-grid">Best Sellers</h2>
       <div className="grid-container">
         {visibleProducts.map((product) => {
           return (
@@ -97,7 +98,7 @@ const BestSellerGrid = () => {
           );
         })}
       </div>
-      {!isAllLoaded && <button onClick={handleViewMore}>View More</button>}
+      {!isAllLoaded && <button className="view-collection-button" onClick={handleViewMore}>View Collection</button>}
     </section>
   );
 };
