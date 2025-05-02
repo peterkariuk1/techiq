@@ -1,0 +1,105 @@
+import "../styles/grid.css";
+import React, { useState } from "react";
+import products from "../assets/mockProducts.js";
+import categoryIcon from "../assets/category-icon.png";
+import shareIcon from "../assets/share-icon.png";
+import addToCartIcon from "../assets/bag-icon.png";
+import seeMoreIcon from "../assets/see-more.png";
+
+const BestSellerGrid = () => {
+  const [visibleCount, setVisibleCount] = useState(8);
+
+  console.log(products.map((p) => p.gender));
+
+  // Filter products for gender "men"
+  const bestSellerProducts = products.filter((p) => p.isBestSeller === true);
+  const visibleProducts = bestSellerProducts.slice(0, visibleCount);
+  const isAllLoaded = visibleCount >= bestSellerProducts.length;
+
+  console.log("Total Best Seller Products:", bestSellerProducts.length);
+  console.log("Visible Best Seller Count:", visibleProducts.length);
+
+  const handleViewMore = () => {
+    setVisibleCount((prev) => prev + 12);
+  };
+
+  function capitalizeWords(str) {
+    if (!str) return "";
+    return str
+      .toString()
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  }
+
+  return (
+    <section className="paginated-grid-section">
+      <h2>Best Seller Perfumes</h2>
+      <div className="grid-container">
+        {visibleProducts.map((product) => {
+          return (
+            <div className="grid-item" key={product.id}>
+              <div className="cart-options">
+                <div
+                  title="Share"
+                  //   onClick={() => handleShare(product)}
+                >
+                  <img className="share--icon" src={shareIcon} alt="Share" />
+                </div>
+                <div
+                  title="Add to Cart"
+                  // onClick={() => quickAddToCart(product, 1)}
+                >
+                  <img
+                    className="cart--icon"
+                    src={addToCartIcon}
+                    alt="Add to cart"
+                  />
+                </div>
+                <div
+                  title="View Details"
+                  // onClick={() => openProductModal(product)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <img
+                    className="more--icon"
+                    src={seeMoreIcon}
+                    alt="View details"
+                  />
+                </div>
+              </div>
+              <img
+                // loading="lazy"
+                src={product.image}
+                alt={product.name || "Product Image"}
+                className="grid-image"
+                //    onError={(e) => {
+                //      e.target.onerror = null;
+                //      e.target.src = defaultImage;
+                //    }}
+              />
+              <p className="grid-name">{capitalizeWords(product.name)}</p>
+              <p className="category-name">
+                <img src={categoryIcon} alt="Category" />
+                {product.category || "Uncategorized"}
+                {/* {product["sub-category"] && ` - ${product["sub-category"]}`} */}
+              </p>
+              <p className="grid-item-price">{product.price}</p>
+              <p className="grid-item-sku">
+                {/* {product.sku_leave_blank_to_auto_generate_sku
+                ? `SKU: ${product.sku_leave_blank_to_auto_generate_sku}`
+                : ""} */}
+              </p>
+              {/* {product.isBestSeller && (
+                <span className="badge">Best Seller</span>
+              )} */}
+            </div>
+          );
+        })}
+      </div>
+      {!isAllLoaded && <button onClick={handleViewMore}>View More</button>}
+    </section>
+  );
+};
+
+export default BestSellerGrid;

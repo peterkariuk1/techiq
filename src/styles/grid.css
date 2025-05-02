@@ -21,8 +21,9 @@
 }
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-  gap: 25px;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  column-gap:35px;
+  row-gap:15px;
   margin-bottom: 30px;
 }
 
@@ -33,6 +34,17 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.002);
   border: 1px solid #dddddd94;
   position: relative;
+}
+.badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: gold;
+  color: black;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 0.75rem;
 }
 .grid-item:hover {
   border: 1px solid #ab8e66;
