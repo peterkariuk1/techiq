@@ -1,5 +1,9 @@
 const Footer = () => {
-  return <div></div>;
+  return (
+    <div>
+      <h1>Footer and Contact Section will fall here</h1>
+    </div>
+  );
 };
 
 export default Footer;
