@@ -8,9 +8,13 @@ import bodyCareImage from "../assets/lorisbodycare.webp";
 import perfumeImage from "../assets/lorisperfume.jpg";
 import cologneImage from "../assets/loriscologne.jpg";
 import autoPerfumeImage from "../assets/lorisaautoperfume.jpg";
+import ladiesImage from "../assets/womanperfume.jpeg";
+import menImage from "../assets/manperfume.jpeg";
 
 // Sample categories
 const categories = [
+  { id: 1, name: "Ladies Perfume", image: ladiesImage },
+  { id: 1, name: "Men Perfume", image: menImage },
   { id: 1, name: "Diffusers", image: diffuserImage },
   { id: 2, name: "Frequence", image: frequencesImage },
   { id: 3, name: "Niche", image: nicheImage },
