@@ -1,6 +1,6 @@
 import "../styles/grid.css";
 import React, { useState } from "react";
-import  products  from "../assets/mockProducts.js";
+import products from "../assets/mockProducts.js";
 import categoryIcon from "../assets/category-icon.png";
 import shareIcon from "../assets/share-icon.png";
 import addToCartIcon from "../assets/bag-icon.png";
@@ -34,7 +34,8 @@ const MenPerfumes = () => {
 
   return (
     <section className="paginated-grid-section">
-      <h2>Men's Perfumes</h2>
+      <p className="generic-text"> Confident, Crisp, Bold!</p>
+      <h2 className="title-mini-grid">Men Best Sellers</h2>{" "}
       <div className="grid-container">
         {visibleProducts.map((product) => {
           return (
@@ -97,7 +98,7 @@ const MenPerfumes = () => {
           );
         })}
       </div>
-      {!isAllLoaded && <button onClick={handleViewMore}>View More</button>}
+      {!isAllLoaded && <button className="view-collection-button" onClick={handleViewMore}>View Collection</button>}
     </section>
   );
 };
