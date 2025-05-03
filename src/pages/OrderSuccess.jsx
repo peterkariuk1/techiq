@@ -9,6 +9,8 @@ import { doc, getDoc } from "firebase/firestore";
 const OrderSuccess = () => {
   const [searchParams] = useSearchParams();
   const orderId = searchParams.get("orderId");
+  const via = searchParams.get("via"); // Get the order method from URL
+  
   const [orderDetails, setOrderDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -62,6 +64,7 @@ const OrderSuccess = () => {
             total: data.total.toLocaleString() + " KSh",
             items: data.items.length,
             status: data.status,
+            orderMethod: data.orderMethod || (via === 'whatsapp' ? 'whatsapp' : 'website')
           });
         } else {
           setError("Order not found");
@@ -75,7 +78,37 @@ const OrderSuccess = () => {
     };
 
     fetchOrderFromFirestore();
-  }, [orderId]);
+  }, [orderId, via]);
+
+  // Determine the order method - from database, URL param, or default
+  const orderMethod = orderDetails?.orderMethod || (via === 'whatsapp' ? 'whatsapp' : 'website');
+  
+  // Get appropriate messaging based on order method
+  const getOrderMethodMessage = () => {
+    if (orderMethod === 'whatsapp') {
+      return {
+        title: "Your WhatsApp Order is Confirmed!",
+        confirmation: "We've received your WhatsApp order request and it has been recorded in our system. Please check your WhatsApp for further communication.",
+        nextSteps: [
+          "Continue your conversation in WhatsApp",
+          "Our team will confirm your order details via WhatsApp",
+          "You'll arrange payment and delivery through WhatsApp"
+        ]
+      };
+    } else {
+      return {
+        title: "Thank You for Your Order!",
+        confirmation: "We've received your order and an attendant will reach out to you shortly. A confirmation has been sent to your email address.",
+        nextSteps: [
+          "Check your email for order confirmation",
+          "Our team will call you to confirm your order details",
+          "You'll arrange for payment and delivery during the call"
+        ]
+      };
+    }
+  };
+  
+  const methodMessage = getOrderMethodMessage();
 
   return (
     <div className="order-success-page">
@@ -107,7 +140,7 @@ const OrderSuccess = () => {
               />
             </div>
 
-            <h1>Thank You for Your Order!</h1>
+            <h1>{methodMessage.title}</h1>
 
             <div className="order-details">
               <p className="order-number">
@@ -121,8 +154,7 @@ const OrderSuccess = () => {
                 </>
               )}
               <p className="order-confirmation">
-                We've received your order and are processing it now. A
-                confirmation has been sent to your email address.
+                {methodMessage.confirmation}
               </p>
             </div>
 
@@ -138,9 +170,9 @@ const OrderSuccess = () => {
             <div className="next-steps">
               <h2>What's Next?</h2>
               <ul>
-                <li>Check your email for order confirmation</li>
-                <li>You'll receive updates on your order status</li>
-                <li>Prepare your M-PESA PIN for delivery payment (if applicable)</li>
+                {methodMessage.nextSteps.map((step, index) => (
+                  <li key={index}>{step}</li>
+                ))}
               </ul>
             </div>
 
@@ -161,6 +193,11 @@ const OrderSuccess = () => {
               <p>
                 <strong>Phone:</strong> +254 712 345 678
               </p>
+              {orderMethod === 'whatsapp' && (
+                <p>
+                  <strong>WhatsApp:</strong> +254 712 345 678
+                </p>
+              )}
             </div>
           </>
         )}

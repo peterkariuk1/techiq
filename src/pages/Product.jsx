@@ -37,7 +37,7 @@ const Product = () => {
 
       try {
         setLoading(true);
-        const productRef = doc(db, "products", productId);
+        const productRef = doc(db, "test-products", productId);
         const productSnap = await getDoc(productRef);
 
         if (productSnap.exists()) {
@@ -252,7 +252,7 @@ const Product = () => {
           </div>
 
           <div className="product-page-price">
-            {formatPrice(product.selling_price)}
+            {formatPrice(product.price)}
           </div>
 
           {product.description && (

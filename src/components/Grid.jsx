@@ -425,6 +425,12 @@ const Grid = () => {
           <div className="grid-container">
             {visibleProducts.map((product) => (
               <div className="grid-item" key={product.id}>
+                {product.isBestSeller && (
+                  <div className="bestseller-badge" title="Best Seller">
+                    <span className="star">★</span>
+                    <span className="bestseller-text">Best Seller</span>
+                  </div>
+                )}
                 <div className="cart-options">
                   <div title="Share" onClick={() => handleShare(product)}>
                     <img className="share--icon" src={shareIcon} alt="Share" />
@@ -468,6 +474,11 @@ const Grid = () => {
                 <div className="product-modal-container">
                   {/* Left Section - Product Image */}
                   <div className="product-modal-image">
+                    {selectedProduct.isBestSeller && (
+                      <div className="modal-bestseller-badge">
+                        <span className="star">★</span> Best Seller
+                      </div>
+                    )}
                     <img
                       src={getProductImage(selectedProduct)}
                       alt={selectedProduct.name}

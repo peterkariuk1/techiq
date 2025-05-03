@@ -478,10 +478,10 @@ const UploadProducts = () => {
                   </div>
                   <div 
                     className={`radio-button ${formData.gender === 'unspecified' ? 'active' : ''}`}
-                    onClick={() => handleRadioChange('gender', 'unspecified')}
+                    onClick={() => handleRadioChange('gender', 'None')}
                   >
                     <div className="radio-dot"></div>
-                    <span>Unspecified</span>
+                    <span>None</span>
                   </div>
                 </div>
               </div>

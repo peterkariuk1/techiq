@@ -3,17 +3,13 @@ import "../styles/checkout.css";
 import logoImage from "../assets/lorislogo.png";
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from "../context/CartContext";
-import axios from "axios";
 import { db, auth } from "../../firebase/firebaseConfig";
 import { setDoc, doc } from "firebase/firestore";
-
-// Backend API URL
-const API_URL = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:5000/api';
 
 const Checkout = () => {
   // Navigation and state setup
   const navigate = useNavigate();
-  const [paymentMethod, setPaymentMethod] = useState("mpesa");
+  const [orderMethod, setOrderMethod] = useState("normal");
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -21,12 +17,9 @@ const Checkout = () => {
     address: "",
     city: "",
     postalCode: "",
-    deliveryNotes: "",
-    mpesaPhone: ""
+    deliveryNotes: ""
   });
   const [isProcessing, setIsProcessing] = useState(false);
-  const [paymentStatus, setPaymentStatus] = useState(null);
-  const [checkoutRequestID, setCheckoutRequestID] = useState(null);
   const { cart: cartItems, updateQuantity, removeFromCart: removeItem, clearCart } = useCart();
   
   // Calculate totals
@@ -46,101 +39,11 @@ const Checkout = () => {
     return `LOR-${Date.now().toString().substring(7)}`;
   };
   
-  // Handle M-PESA payment
-  const handleMpesaPayment = async () => {
-    if (!formData.mpesaPhone) {
-      alert("Please enter your M-PESA phone number");
-      return;
-    }
-    
-    // Updated regex to handle both 07 and 01 phone numbers
-    const phoneRegex = /^(0|\+254|254)[17][0-9]{8}$/;
-    if (!phoneRegex.test(formData.mpesaPhone)) {
-      alert("Please enter a valid M-PESA phone number (e.g., 0712345678 or 0112345678)");
-      return;
-    }
-    
+  // Handle order submission via normal method
+  const handleNormalOrder = async (orderId) => {
     try {
       setIsProcessing(true);
-      setPaymentStatus("initiating");
       
-      // Generate order ID
-      const orderId = getOrderId();
-      
-      // Call backend to initiate STK Push
-      const response = await axios.post(`${API_URL}/mpesa/initiate`, {
-        phoneNumber: formData.mpesaPhone,
-        amount: Math.round(total),
-        orderId
-      });
-      
-      if (response.data.success) {
-        setCheckoutRequestID(response.data.data.CheckoutRequestID);
-        setPaymentStatus("pending");
-        
-        // Start polling for payment status
-        startPollingPaymentStatus(response.data.data.CheckoutRequestID, orderId);
-      } else {
-        throw new Error(response.data.message || "Failed to initiate payment");
-      }
-    } catch (error) {
-      console.error("Payment initiation error:", error);
-      setPaymentStatus("failed");
-      alert("Payment failed: " + (error.message || "Unknown error"));
-      setIsProcessing(false);
-    }
-  };
-  
-  // Poll for payment status
-  const startPollingPaymentStatus = (requestId, orderId) => {
-    let pollCount = 0;
-    const maxPolls = 24; // 2 minutes (5 seconds * 24)
-    
-    const statusCheck = setInterval(async () => {
-      try {
-        pollCount++;
-        
-        if (pollCount >= maxPolls) {
-          clearInterval(statusCheck);
-          setPaymentStatus("timeout");
-          setIsProcessing(false);
-          return;
-        }
-        
-        const response = await axios.post(`${API_URL}/mpesa/status`, {
-          checkoutRequestID: requestId
-        });
-        
-        const result = response.data.data;
-        
-        // Check if payment is complete
-        if (result.ResultCode === "0") {
-          // Payment successful
-          clearInterval(statusCheck);
-          setPaymentStatus("success");
-          
-          // Process order completion
-          handleOrderCompletion(orderId);
-        } else if (result.errorCode === "500.001.1001") {
-          // Still waiting for user to respond
-          console.log("Waiting for user to respond...");
-        } else {
-          // Payment failed
-          clearInterval(statusCheck);
-          setPaymentStatus("failed");
-          setIsProcessing(false);
-          alert("Payment failed: " + result.ResultDesc);
-        }
-      } catch (error) {
-        console.log("Status check error:", error);
-        // Don't stop polling on network errors, might just be temporary
-      }
-    }, 5000); // Check every 5 seconds
-  };
-  
-  // Handle successful order completion
-  const handleOrderCompletion = async (orderId) => {
-    try {
       // Get current user
       const user = auth.currentUser;
       
@@ -161,8 +64,8 @@ const Checkout = () => {
         shipping,
         tax,
         total,
-        status: "confirmed",
-        paymentMethod: paymentMethod,
+        status: "pending",
+        orderMethod: "website",
         shippingAddress: {
           fullName: formData.fullName,
           address: formData.address,
@@ -196,8 +99,113 @@ const Checkout = () => {
       navigate(`/order-success?orderId=${orderId}`);
     } catch (error) {
       console.error("Error saving order:", error);
-      alert("Your payment was successful but we encountered an error saving your order. Please contact customer support.");
+      alert("We encountered an error processing your order. Please try again or contact customer support.");
+      setIsProcessing(false);
     }
+  };
+  
+  // Handle order via WhatsApp
+  const handleWhatsAppOrder = (orderId) => {
+    // Create WhatsApp message with order details
+    let message = `Hello Loris Kenya, I would like to place an order (${orderId}):\n\n`;
+    
+    message += `*Order Details*\n`;
+    message += `------------------\n\n`;
+    
+    // Add items
+    cartItems.forEach((item, index) => {
+      message += `${index + 1}) ${item.name} x${item.quantity} - KSh ${(item.price || item.selling_price) * item.quantity}\n`;
+    });
+    
+    message += `\n*Order Summary*\n`;
+    message += `Subtotal: KSh ${subtotal}\n`;
+    message += `Shipping: ${shipping === 0 ? 'Free' : `KSh ${shipping}`}\n`;
+    message += `Tax: KSh ${tax}\n`;
+    message += `Total: KSh ${total}\n\n`;
+    
+    message += `*Delivery Information*\n`;
+    message += `Name: ${formData.fullName}\n`;
+    message += `Phone: ${formData.phone}\n`;
+    message += `Email: ${formData.email}\n`;
+    message += `Address: ${formData.address}\n`;
+    message += `City: ${formData.city}\n`;
+    message += formData.postalCode ? `Postal Code: ${formData.postalCode}\n` : '';
+    message += formData.deliveryNotes ? `Notes: ${formData.deliveryNotes}\n` : '';
+    
+    // WhatsApp business number - replace with the actual business number
+    const whatsappNumber = "254112713070"; // Replace with the actual number
+    
+    // Create WhatsApp URL
+    const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+    
+    // Record the order in database before opening WhatsApp
+    const saveOrderAndOpenWhatsApp = async () => {
+      try {
+        // Get current user
+        const user = auth.currentUser;
+        
+        // Create order data
+        const orderData = {
+          id: orderId,
+          userId: user ? user.uid : 'guest',
+          userEmail: user ? user.email : formData.email,
+          items: cartItems.map(item => ({
+            id: item.id,
+            name: item.name,
+            price: item.price || item.selling_price,
+            quantity: item.quantity,
+            category: item.category || 'Uncategorized',
+            image: item.image || ''
+          })),
+          subtotal,
+          shipping,
+          tax,
+          total,
+          status: "pending",
+          orderMethod: "whatsapp",
+          shippingAddress: {
+            fullName: formData.fullName,
+            address: formData.address,
+            city: formData.city,
+            postalCode: formData.postalCode,
+            phone: formData.phone,
+            email: formData.email,
+            notes: formData.deliveryNotes
+          },
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        
+        // If user is logged in, save to their collection
+        if (user) {
+          // Save to user's orders collection
+          await setDoc(doc(db, "users", user.uid, "orders", orderId), orderData);
+        }
+        
+        // Always save to main orders collection (for admin access)
+        await setDoc(doc(db, "orders", orderId), {
+          ...orderData,
+          userDisplayName: user ? user.displayName || '' : formData.fullName
+        });
+        
+        // Clear cart
+        clearCart();
+        
+        // Open WhatsApp in a new tab
+        window.open(whatsappURL, '_blank');
+        
+        // Navigate to success page
+        navigate(`/order-success?orderId=${orderId}&via=whatsapp`);
+      } catch (error) {
+        console.error("Error saving WhatsApp order:", error);
+        alert("We encountered an error processing your order. You can still continue to WhatsApp.");
+        // Open WhatsApp anyway
+        window.open(whatsappURL, '_blank');
+        setIsProcessing(false);
+      }
+    };
+    
+    saveOrderAndOpenWhatsApp();
   };
   
   // Handle checkout button click
@@ -208,11 +216,14 @@ const Checkout = () => {
       return;
     }
     
-    if (paymentMethod === "mpesa") {
-      handleMpesaPayment();
+    // Generate order ID
+    const orderId = getOrderId();
+    
+    // Process based on selected order method
+    if (orderMethod === "whatsapp") {
+      handleWhatsAppOrder(orderId);
     } else {
-      // Handle card payment (this would typically be integrated with a payment gateway)
-      alert("Card payment integration not implemented yet");
+      handleNormalOrder(orderId);
     }
   };
 
@@ -367,68 +378,43 @@ const Checkout = () => {
             </div>
           </div>
           
-          {/* Payment Method */}
-          <div className="payment-method">
-            <h2>Payment Method</h2>
-            <div className="payment-options">
+          {/* Order Method Selection */}
+          <div className="order-method">
+            <h2>How would you like to place your order?</h2>
+            <div className="order-options">
               <div 
-                className={`payment-option ${paymentMethod === 'mpesa' ? 'selected' : ''}`}
-                onClick={() => setPaymentMethod('mpesa')}
+                className={`order-option ${orderMethod === 'normal' ? 'selected' : ''}`}
+                onClick={() => setOrderMethod('normal')}
               >
                 <div className="option-radio">
-                  {paymentMethod === 'mpesa' && <div className="radio-inner"></div>}
+                  {orderMethod === 'normal' && <div className="radio-inner"></div>}
                 </div>
                 <div className="option-label">
-                  <span>M-PESA</span>
-                  <small>Pay via M-PESA mobile money</small>
+                  <span>Standard Order</span>
+                  <small>Place your order through our website directly</small>
                 </div>
               </div>
               
               <div 
-                className={`payment-option ${paymentMethod === 'card' ? 'selected' : ''}`}
-                onClick={() => setPaymentMethod('card')}
+                className={`order-option ${orderMethod === 'whatsapp' ? 'selected' : ''}`}
+                onClick={() => setOrderMethod('whatsapp')}
               >
                 <div className="option-radio">
-                  {paymentMethod === 'card' && <div className="radio-inner"></div>}
+                  {orderMethod === 'whatsapp' && <div className="radio-inner"></div>}
                 </div>
                 <div className="option-label">
-                  <span>Card Payment</span>
-                  <small>Pay with Visa, Mastercard or American Express</small>
+                  <span>WhatsApp Order</span>
+                  <small>Place your order via WhatsApp for direct communication</small>
                 </div>
               </div>
             </div>
             
-            {/* M-PESA Payment Form */}
-            {paymentMethod === 'mpesa' && (
-              <div className="mpesa-form">
-                <p className="payment-instructions">
-                  Enter your phone number to receive an M-PESA payment prompt
+            {orderMethod === 'whatsapp' && (
+              <div className="whatsapp-info">
+                <p className="order-instructions">
+                  When you click "Place Order", we'll open WhatsApp with your order details pre-filled.
+                  You can add any additional comments before sending.
                 </p>
-                <div className="form-row">
-                  <input 
-                    type="tel" 
-                    name="mpesaPhone" 
-                    placeholder="Phone Number (e.g. 0712345678)" 
-                    value={formData.mpesaPhone} 
-                    onChange={handleInputChange} 
-                  />
-                </div>
-              </div>
-            )}
-            
-            {/* Card Payment Form */}
-            {paymentMethod === 'card' && (
-              <div className="card-form">
-                <div className="form-row">
-                  <input type="text" placeholder="Card Holder Name" />
-                </div>
-                <div className="form-row">
-                  <input type="text" placeholder="Card Number" />
-                </div>
-                <div className="form-row double">
-                  <input type="text" placeholder="Expiry Date (MM/YY)" />
-                  <input type="text" placeholder="CVV" />
-                </div>
               </div>
             )}
           </div>
@@ -439,7 +425,7 @@ const Checkout = () => {
             onClick={handleCheckout} 
             disabled={isProcessing}
           >
-            {isProcessing ? "Processing..." : paymentMethod === 'mpesa' ? "Pay with M-PESA" : "Pay with Card"}
+            {isProcessing ? "Processing..." : orderMethod === 'whatsapp' ? "Order via WhatsApp" : "Place Order"}
           </button>
           
           <p className="back-to-shopping">
