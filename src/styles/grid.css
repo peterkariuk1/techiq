@@ -134,6 +134,46 @@
   left: 10px;
 }
 
+.bestseller-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: rgba(255, 215, 0, 0.9);
+  color: #222;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  z-index: 2;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.bestseller-badge .star {
+  color: #FF8C00;
+  font-size: 1rem;
+  margin-right: 4px;
+}
+
+.bestseller-badge .bestseller-text {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* For small mobile screens, just show the star */
+@media (max-width: 480px) {
+  .bestseller-badge {
+    padding: 3px;
+  }
+  .bestseller-badge .bestseller-text {
+    display: none;
+  }
+  .bestseller-badge .star {
+    margin-right: 0;
+  }
+}
+
 .grid-image {
   width: 100%;
   height: 180px;
@@ -353,6 +393,29 @@
   align-items: center;
   padding: 20px;
   background-color: var(--secondary-color);
+  position: relative;
+}
+
+.modal-bestseller-badge {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background-color: rgba(255, 215, 0, 0.9);
+  color: #222;
+  padding: 5px 12px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  z-index: 2;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.modal-bestseller-badge .star {
+  color: #FF8C00;
+  font-size: 1.1rem;
+  margin-right: 6px;
 }
 
 .product-modal-image img {
