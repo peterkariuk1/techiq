@@ -284,7 +284,7 @@
 .dropdown-menu li button {
   background-color: transparent !important;
   color: #bbb !important;
-
+}
 /* Only when specifically active-subtab, use the distinct styling */
 .dropdown-menu li.active-subtab button {
   background-color: #47515e !important;
@@ -730,5 +730,4 @@
   .stat-value {
     font-size: 18px;
   }
-}
 }
