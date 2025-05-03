@@ -1,30 +1,27 @@
-import { useState } from "react";
+import { Link } from "react-router-dom";
 import Header from "../components/Header.jsx";
 import Banner from "../components/Banner.jsx";
-import Filters from "../components/Filters.jsx";
-import Grid from "../components/Grid.jsx";
+import Categories from "../components/Categories.jsx";
 import MensGrid from "../components/MensGrid.jsx";
 import BestSellerGrid from "../components/BestSellerGrid.jsx";
 import LadiesGrid from "../components/LadiesGrid.jsx";
-import ShopAllToggle from "../components/shopAllToggle.jsx";
+
 import Footer from "../components/Footer.jsx";
 
 
 const Home = () => {
-  const [showAll, setShowAll] = useState(false);
   return (
     <div className="home-page">
       <Header />
       <Banner />
-      <Filters />
+      <Categories />
       {/* Added different categorised grids */}
       <BestSellerGrid />
       <LadiesGrid />
       <MensGrid />
-      {/* This button will open the whole grid */}
-      <ShopAllToggle showAll={showAll} setShowAll={setShowAll} />
-      {/* Conditionally show the full product grid */}
-      {showAll && <Grid />}
+      <Link to="/all-products">
+        <button className="view-all-button">View All Products</button>
+      </Link>
       <Footer />
     </div>
   );

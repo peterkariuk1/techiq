@@ -162,25 +162,57 @@ const Grid = () => {
     async function fetchProducts() {
       try {
         setLoading(true);
+        console.log("Fetching products from test-products collection...");
 
-        // Reference to products collection
-        const productsRef = collection(db, "products");
-
-        // Create query - still fetch all products and filter in JS
-        // This approach allows for more complex filtering without multiple Firebase queries
+        // Reference to the test-products collection
+        const productsRef = collection(db, "test-products");
+        
+        // First check if there are any products at all (for debugging)
+        const testSnapshot = await getDocs(productsRef);
+        console.log(`Total products in collection: ${testSnapshot.docs.length}`);
+        
+        if (testSnapshot.docs.length === 0) {
+          console.log("Collection is empty - no products found");
+          setProducts([]);
+          setLoading(false);
+          return;
+        }
+        
+        // Check if inStock field exists and is causing filtering issues
+        let sampleDoc = testSnapshot.docs[0].data();
+        console.log("Sample document fields:", Object.keys(sampleDoc));
+        console.log("Sample inStock value:", sampleDoc.inStock);
+        
+        // Create query - temporarily remove the inStock filter if it's causing issues
         let productsQuery;
 
         // Choose sort order based on URL parameter
         switch(sortBy) {
           case "price-high-to-low":
-            productsQuery = query(productsRef, orderBy("selling_price", "desc"), limit(1000));
+            productsQuery = query(
+              productsRef, 
+              // Only add inStock filter if needed
+              // where("inStock", "==", true),
+              orderBy("price", "desc"), 
+              limit(1000)
+            );
             break;
           case "price-low-to-high":
-            productsQuery = query(productsRef, orderBy("selling_price", "asc"), limit(1000));
+            productsQuery = query(
+              productsRef, 
+              // where("inStock", "==", true),
+              orderBy("price", "asc"), 
+              limit(1000)
+            );
             break;
           case "newest":
           default:
-            productsQuery = query(productsRef, orderBy("created_at", "desc"), limit(1000));
+            productsQuery = query(
+              productsRef, 
+              // where("inStock", "==", true),
+              orderBy("createdAt", "desc"), 
+              limit(1000)
+            );
             break;
         }
 
@@ -191,8 +223,20 @@ const Grid = () => {
         const productsData = querySnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(),
+          // Set default values for critical fields if missing
+          price: doc.data().price || 0,
+          inStock: doc.data().inStock !== false, // Default to true if not explicitly false
+          name: doc.data().name || "Unnamed Product",
+          category: doc.data().category || "Uncategorized"
         }));
 
+        console.log(`Fetched ${productsData.length} products from test-products collection`);
+        
+        // Log first product for debugging
+        if (productsData.length > 0) {
+          console.log("Sample product data:", productsData[0]);
+        }
+        
         setProducts(productsData);
         setLoading(false);
       } catch (error) {
@@ -206,37 +250,43 @@ const Grid = () => {
 
   // Filter products based on URL parameters
   const filteredProducts = products.filter(product => {
-    const productPrice = product.selling_price || 0;
+    const productPrice = product.price || 0;
     
     // Price filter
     if (productPrice < minPrice || productPrice > maxPrice) {
       return false;
     }
     
-    // Category filter
-    if (category && product.category) {
-      // First try exact match (case insensitive)
-      if (product.category.toLowerCase() === category.toLowerCase()) {
-        return true;
+    // Handle both category and gender filtering
+    if (category) {
+      // Special handling for Men/Women categories which should filter by gender
+      if (category === "Men Perfume" || category === "Men") {
+        return product.gender === "men";
       }
       
-      // Then try contains match
-      if (product.category.toLowerCase().includes(category.toLowerCase())) {
-        return true;
+      if (category === "Ladies Perfume" || category === "Women") {
+        return product.gender === "women";
       }
       
-      // Also check sub-category if available
-      if (product["sub-category"] && 
-          product["sub-category"].toLowerCase().includes(category.toLowerCase())) {
-        return true;
+      // For other categories, filter by category field
+      if (product.category) {
+        // Try exact match (case insensitive)
+        if (product.category.toLowerCase() === category.toLowerCase()) {
+          return true;
+        }
+        
+        // Try contains match
+        if (product.category.toLowerCase().includes(category.toLowerCase())) {
+          return true;
+        }
+        
+        // No match found for category
+        return false;
       }
-      
-      // No match found for category
-      return false;
     }
     
-    // Search query filter (if no category is selected)
-    if (searchQuery && !category) {
+    // Search query filter
+    if (searchQuery) {
       const query = searchQuery.toLowerCase();
       
       // Search in name
@@ -255,11 +305,6 @@ const Grid = () => {
       }
       
       // No match found for search query
-      return false;
-    }
-    
-    // Search query without category, it means the item didn't match
-    if (searchQuery && !category) {
       return false;
     }
     
@@ -316,20 +361,10 @@ const Grid = () => {
   // Get product image with multiple possible field names
   const getProductImage = (product) => {
     // Try different possible image field names
-    const imageUrl =
-      product.image ||
-      product.image_url ||
-      product.img ||
-      product.thumbnail ||
-      product.photo;
+    const imageUrl = product.image;
 
     // Check if URL is valid
     if (imageUrl && typeof imageUrl === 'string' && imageUrl.trim() !== '') {
-      // If it's a relative path, convert to absolute URL
-      if (imageUrl.startsWith('/')) {
-        return `https://pos.loriskenya.com${imageUrl}`;
-      }
-      // If it's already a full URL, use it
       return imageUrl;
     }
 
@@ -406,7 +441,6 @@ const Grid = () => {
                   </div>
                 </div>
                 <img
-                  // loading="lazy"
                   src={getProductImage(product)}
                   alt={product.name || 'Product Image'}
                   className="grid-image"
@@ -419,13 +453,8 @@ const Grid = () => {
                 <p className="category-name">
                   <img src={categoryIcon} alt="Category" />
                   {product.category || 'Uncategorized'}
-                  {product["sub-category"] && ` - ${product["sub-category"]}`}
                 </p>
-                <p className="grid-item-price">{formatPrice(product.selling_price)}</p>
-                <p className="grid-item-sku">
-                  {product.sku_leave_blank_to_auto_generate_sku ?
-                    `SKU: ${product.sku_leave_blank_to_auto_generate_sku}` : ''}
-                </p>
+                <p className="grid-item-price">{formatPrice(product.price)}</p>
               </div>
             ))}
           </div>
@@ -456,7 +485,6 @@ const Grid = () => {
                     <p className="product-modal-category">
                       <span className="category-label">Category: </span>
                       {selectedProduct.category || 'Uncategorized'}
-                      {selectedProduct["sub-category"] && ` - ${selectedProduct["sub-category"]}`}
                     </p>
                     
                     {/* Share button */}
@@ -480,17 +508,22 @@ const Grid = () => {
 
                     <div className="product-modal-purchase">
                       <div className="product-modal-price">
-                        {formatPrice(selectedProduct.selling_price)}
+                        {formatPrice(selectedProduct.price)}
                       </div>
                       <button className="add-to-cart-btn" onClick={handleAddToCart}>
                         Add to Cart
                       </button>
                     </div>
 
-                    {selectedProduct.sku_leave_blank_to_auto_generate_sku && (
-                      <p className="product-modal-sku">
-                        SKU: {selectedProduct.sku_leave_blank_to_auto_generate_sku}
-                      </p>
+                    {selectedProduct.quantities && selectedProduct.quantities.length > 0 && (
+                      <div className="product-modal-quantities">
+                        <h4>Available Sizes:</h4>
+                        <div className="quantities-list">
+                          {selectedProduct.quantities.map((qty, index) => (
+                            <span key={index} className="quantity-badge">{qty}</span>
+                          ))}
+                        </div>
+                      </div>
                     )}
                   </div>
                 </div>

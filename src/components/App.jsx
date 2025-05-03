@@ -17,6 +17,7 @@ import NotFound from "../pages/NotFound.jsx";
 import AdminOrders from "../pages/AdminOrders.jsx";
 import Maintenance from "../pages/Maintenance.jsx";
 import UploadProducts from "../pages/UploadProducts.jsx";
+import AllProducts from "../pages/AllProducts.jsx";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -58,6 +59,7 @@ function App() {
             <Route path="*" element={<NotFound />}></Route>
             <Route path="/admin-orders" element={<AdminOrders />}></Route>
             <Route path="/upload-products" element={<UploadProducts />}></Route>
+            <Route path="/all-products" element={<AllProducts />}></Route>
           </Routes>
         </CartProvider>
       )}
