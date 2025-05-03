@@ -71,7 +71,7 @@ function Categories() {
         setSelectedCategory(categoryName);
         
         // Handles scroll to sections for Men and Ladies perfumes
-        if (categoryName === "Men Perfume") {
+        if (categoryName === "Men") {
             // Scroll to men section
             const menSection = document.getElementById('men');
             if (menSection) {
@@ -79,7 +79,7 @@ function Categories() {
                 return;
             }
         } 
-        else if (categoryName === "Ladies Perfume") {
+        else if (categoryName === "Women") {
             // Scroll to women section
             const womenSection = document.getElementById('women');
             if (womenSection) {
