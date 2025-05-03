@@ -13,15 +13,15 @@ import menImage from "../assets/manperfume.jpeg";
 
 // Sample categories
 const categories = [
-  { id: 1, name: "Ladies Perfume", image: ladiesImage },
-  { id: 1, name: "Men Perfume", image: menImage },
-  { id: 1, name: "Diffusers", image: diffuserImage },
-  { id: 2, name: "Frequence", image: frequencesImage },
-  { id: 3, name: "Niche", image: nicheImage },
-  { id: 4, name: "Body Care", image: bodyCareImage },
-  { id: 5, name: "Auto Perfumes", image: autoPerfumeImage },
-  { id: 6, name: "Loris Perfumes", image: perfumeImage },
-  { id: 8, name: "Cologne", image: cologneImage },
+  { id: 1, name: "Women", image: ladiesImage },
+  { id: 2, name: "Men", image: menImage },
+  { id: 3, name: "Diffusers", image: diffuserImage },
+  { id: 4, name: "Frequence", image: frequencesImage },
+  { id: 5, name: "Niche", image: nicheImage },
+  { id: 6, name: "Body Care", image: bodyCareImage },
+  { id: 7, name: "Auto Perfumes", image: autoPerfumeImage },
+  { id: 8, name: "Loris Perfumes", image: perfumeImage },
+  { id: 9, name: "Cologne", image: cologneImage },
 ];
 
 const Filters = () => {
