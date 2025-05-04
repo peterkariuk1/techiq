@@ -1,0 +1,364 @@
+/* Update Products Component Styles */
+
+.update-products-container {
+  width: 100%;
+  padding: 0 15px 0 0;
+}
+
+/* Header Section */
+.update-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding-right: 10px;
+}
+
+.update-header-title h2 {
+  margin: 0 0 5px;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.update-header-title p {
+  margin: 0;
+  color: #666;
+}
+
+.update-actions {
+  display: flex;
+  gap: 15px;
+}
+
+/* Search Input */
+.update-search-container {
+  position: relative;
+  width: 280px;
+  margin-right: 5px;
+}
+
+.update-search-container input {
+  width: 100%;
+  padding: 10px 15px 10px 38px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.update-search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+}
+
+/* Category filters */
+.update-category-filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.update-category-filters button {
+  padding: 8px 16px;
+  background: #f5f5f5;
+  border: none;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  color: #555;
+}
+
+.update-category-filters button:hover {
+  background: #eee;
+}
+
+.update-category-filters button.active {
+  background: var(--primary-color, #ab8e66);
+  color: white;
+}
+
+/* Table */
+.update-table-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  overflow: auto;
+}
+
+.update-products-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.update-products-table th {
+  text-align: left;
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  font-weight: 500;
+}
+
+.update-products-table td {
+  padding: 15px;
+  border-bottom: 1px solid #f5f5f5;
+  vertical-align: middle;
+}
+
+.update-products-table tr:last-child td {
+  border-bottom: none;
+}
+
+.update-products-table tr:hover {
+  background-color: #f9f9f9;
+}
+
+.update-products-table tr.editing {
+  background-color: #fffde7;
+}
+
+/* Product image */
+.update-product-image {
+  width: 80px;
+}
+
+.update-product-image img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  border-radius: 4px;
+  border: 1px solid #eee;
+}
+
+.update-no-image {
+  width: 60px;
+  height: 60px;
+  background: #f5f5f5;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #aaa;
+}
+
+/* Product name and ID */
+.update-product-name {
+  min-width: 200px;
+}
+
+.update-product-id {
+  display: block;
+  font-size: 12px;
+  color: #999;
+  margin-top: 5px;
+  font-family: monospace;
+}
+
+/* Status badge */
+.update-status-badge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.update-status-badge.in-stock {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.update-status-badge.out-stock {
+  background: #ffebee;
+  color: #c62828;
+}
+
+/* Edit input */
+.update-edit-input {
+  width: 100px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+/* Stock toggle */
+.update-stock-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.update-stock-toggle input {
+  margin: 0;
+}
+
+/* Action buttons */
+.update-actions-cell {
+  white-space: nowrap;
+  min-width: 200px;
+  text-align: center;
+}
+
+.update-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-right: 12px;
+  min-width: 90px;
+}
+
+/* Remove margin from the last button */
+.update-action-btn:last-child {
+  margin-right: 0;
+}
+
+/* Make edit button stand out a bit more */
+.update-edit-btn {
+  background: #e3f2fd;
+  color: #0d47a1;
+  border: 1px solid rgba(13, 71, 161, 0.2);
+}
+
+/* Make stock button more visible */
+.update-stock-btn {
+  background: #fff8e1;
+  color: #ff8f00;
+  border: 1px solid rgba(255, 143, 0, 0.2);
+}
+
+.update-save-btn {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.update-cancel-btn {
+  background: #f5f5f5;
+  color: #616161;
+}
+
+.update-delete-btn {
+  background: #ffebee;
+  color: #c62828;
+}
+
+/* States */
+.update-loading-state,
+.update-error-state,
+.update-empty-state {
+  padding: 40px;
+  text-align: center;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Delete Modal */
+.update-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.update-delete-modal {
+  background: white;
+  border-radius: 8px;
+  width: 400px;
+  max-width: 90vw;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.update-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.update-warning-icon {
+  color: #ff9800;
+  font-size: 24px;
+}
+
+.update-modal-header h3 {
+  margin: 0;
+  font-weight: 600;
+  color: #333;
+}
+
+.update-modal-content {
+  padding: 20px;
+}
+
+.update-delete-warning {
+  color: #c62828;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.update-modal-actions {
+  padding: 15px 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  border-top: 1px solid #eee;
+}
+
+.update-modal-actions button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.update-cancel-btn {
+  background: #f5f5f5;
+  color: #333;
+}
+
+.update-delete-confirm-btn {
+  background: #c62828;
+  color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .update-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding-right: 15px;
+  }
+  
+  .update-search-container {
+    width: 100%;
+  }
+  
+  .update-products-table th:nth-child(3),
+  .update-products-table td:nth-child(3) {
+    display: none;
+  }
+
+  .update-products-container {
+    padding: 0 10px;
+  }
+}

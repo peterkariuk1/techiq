@@ -58,6 +58,7 @@ const Register = () => {
         email: user.email,
         phone,
         uid: user.uid,
+        role: "customer", // Default role
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       });
