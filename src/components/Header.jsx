@@ -6,8 +6,10 @@ import cartIcon from "../assets/cart.png";
 import profileIcon from "../assets/user.png";
 import "../styles/nav.css";
 import { useCart } from "../context/CartContext";
-import { db } from "../../firebase/firebaseConfig.js";
-import { collection, getDocs, query, limit } from "firebase/firestore";
+import { db, auth } from "../../firebase/firebaseConfig.js";
+import { collection, getDocs, query, limit, getDoc, doc } from "firebase/firestore";
+import { signOut } from "firebase/auth";
+import { FiLogOut, FiUser, FiSettings, FiShoppingBag } from "react-icons/fi";
 
 const placeholders = [
   "Loris Peach Reed Diffuser",
@@ -50,6 +52,7 @@ const Header = () => {
   const navigate = useNavigate();
   const searchInputRef = useRef(null);
   const suggestionsRef = useRef(null);
+  const profileDropdownRef = useRef(null);
 
   const [index, setIndex] = useState(0);
   const [animate, setAnimate] = useState("bounce-in");
@@ -57,7 +60,6 @@ const Header = () => {
   const [isVisible, setIsVisible] = useState(true);
   const { cartItemCount } = useCart();
 
-  // Search suggestions state
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -72,12 +74,16 @@ const Header = () => {
     }
   });
 
-  // Fetch products for search suggestions
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const productsRef = collection(db, "products");
-        const productsQuery = query(productsRef, limit(500)); // Limit to prevent too many products
+        const productsQuery = query(productsRef, limit(500));
         const snapshot = await getDocs(productsQuery);
         const productsData = snapshot.docs.map((doc) => ({
           id: doc.id,
@@ -92,7 +98,33 @@ const Header = () => {
     fetchProducts();
   }, []);
 
-  // Handle input changes and generate suggestions
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        setIsAuthenticated(true);
+        setCurrentUser(user);
+
+        try {
+          const userDoc = await getDoc(doc(db, "users", user.uid));
+          if (userDoc.exists() && userDoc.data().role === "admin") {
+            setIsAdmin(true);
+          } else {
+            setIsAdmin(false);
+          }
+        } catch (error) {
+          console.error("Error checking admin status:", error);
+          setIsAdmin(false);
+        }
+      } else {
+        setIsAuthenticated(false);
+        setCurrentUser(null);
+        setIsAdmin(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   const handleInputChange = (e) => {
     const value = e.target.value;
     setInputValue(value);
@@ -100,19 +132,15 @@ const Header = () => {
     if (value.trim().length > 1) {
       setIsLoading(true);
 
-      // Generate suggestions
       const results = allProducts.filter((product) => {
-        // Case insensitive search in name
         if (product.name && product.name.toLowerCase().includes(value.toLowerCase())) {
           return true;
         }
 
-        // Search in category
         if (product.category && product.category.toLowerCase().includes(value.toLowerCase())) {
           return true;
         }
 
-        // Search in description
         if (product.description && product.description.toLowerCase().includes(value.toLowerCase())) {
           return true;
         }
@@ -120,7 +148,6 @@ const Header = () => {
         return false;
       });
 
-      // Group suggestions by type
       const productSuggestions = results.slice(0, 5).map((p) => ({
         type: "product",
         id: p.id,
@@ -128,14 +155,12 @@ const Header = () => {
         category: p.category,
       }));
 
-      // Get unique categories from results
       const categories = [...new Set(results.map((p) => p.category).filter(Boolean))];
       const categorySuggestions = categories.slice(0, 3).map((c) => ({
         type: "category",
         name: c,
       }));
 
-      // Combine suggestions
       const combinedSuggestions = [...productSuggestions, ...categorySuggestions];
 
       setSuggestions(combinedSuggestions);
@@ -147,44 +172,44 @@ const Header = () => {
     }
   };
 
-  // Handle search submission
   const handleSearch = (term = inputValue) => {
     if (term.trim()) {
-      // Add to recent searches
       const newRecent = [term, ...recentSearches.filter((s) => s !== term)].slice(0, 5);
       setRecentSearches(newRecent);
       localStorage.setItem("recentSearches", JSON.stringify(newRecent));
 
-      // Navigate to search results
       navigate(`/?search=${encodeURIComponent(term)}`);
 
-      // Clear input and hide suggestions
       setInputValue("");
       setShowSuggestions(false);
     }
   };
 
-  // Handle suggestion click
   const handleSuggestionClick = (suggestion) => {
     if (suggestion.type === "product") {
-      // Navigate to product page with category and pid as query parameters
       navigate(`/product/?category=${encodeURIComponent(suggestion.category || "Uncategorized")}&pid=${suggestion.id}`);
     } else if (suggestion.type === "category") {
-      // Navigate to category page (this remains the same)
       navigate(`/?category=${encodeURIComponent(suggestion.name)}`);
     }
 
-    // Add to recent searches
     const newRecent = [suggestion.name, ...recentSearches.filter((s) => s !== suggestion.name)].slice(0, 5);
     setRecentSearches(newRecent);
     localStorage.setItem("recentSearches", JSON.stringify(newRecent));
 
-    // Clear input and hide suggestions
     setInputValue("");
     setShowSuggestions(false);
   };
 
-  // Close suggestions when clicking outside
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      setShowProfileMenu(false);
+      navigate("/");
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -195,6 +220,13 @@ const Header = () => {
       ) {
         setShowSuggestions(false);
       }
+
+      if (
+        profileDropdownRef.current &&
+        !profileDropdownRef.current.contains(event.target)
+      ) {
+        setShowProfileMenu(false);
+      }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
@@ -203,7 +235,6 @@ const Header = () => {
     };
   }, []);
 
-  // Handle keyboard navigation
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       handleSearch();
@@ -213,9 +244,8 @@ const Header = () => {
     }
   };
 
-  // Placeholder animation remains the same
   useEffect(() => {
-    if (inputValue !== "") return; // stop cycling if user types
+    if (inputValue !== "") return;
 
     const interval = setInterval(() => {
       setAnimate("fade-out");
@@ -229,30 +259,27 @@ const Header = () => {
     return () => clearInterval(interval);
   }, [inputValue]);
 
-  // Detect scroll to hide/show header - remains the same
   useEffect(() => {
     let timeoutId = null;
     let lastScrollY = window.scrollY;
-  
+
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-  
+
       if (currentScrollY > lastScrollY) {
-        // Scrolling down
         setIsVisible(false);
-  
+
         if (timeoutId) clearTimeout(timeoutId);
         timeoutId = setTimeout(() => {
           setIsVisible(true);
-        }, 100); // Reappear after idle
+        }, 100);
       } else {
-        // Scrolling up, keep header visible
         setIsVisible(true);
       }
-  
+
       lastScrollY = currentScrollY;
     };
-  
+
     window.addEventListener("scroll", handleScroll);
     return () => {
       clearTimeout(timeoutId);
@@ -262,7 +289,10 @@ const Header = () => {
 
   return (
     <nav className={`header ${isVisible ? "visible" : "hidden"}`}>
+      <Link to="/">
         <img className="loris-logo" src={logoImage} alt="Loris Logo" />
+      </Link>
+
       <div className="searchbox">
         <input
           ref={searchInputRef}
@@ -283,7 +313,6 @@ const Header = () => {
           <img src={searchIcon} alt="Search" />
         </div>
 
-        {/* Search Suggestions Dropdown */}
         {showSuggestions && (
           <div className="search-suggestions" ref={suggestionsRef}>
             {isLoading ? (
@@ -335,11 +364,46 @@ const Header = () => {
       </div>
 
       <div className="right">
-        <Link to="/login">
-          <div className="profile-container">
+        <div className="nav-profile-container" ref={profileDropdownRef}>
+          <div 
+            className="profile-icon-wrapper" 
+            onClick={() => isAuthenticated ? setShowProfileMenu(!showProfileMenu) : navigate("/login")}
+          >
             <img src={profileIcon} alt="Profile" />
+            {isAuthenticated && <span className="auth-indicator" />}
           </div>
-        </Link>
+          
+          {isAuthenticated && showProfileMenu && (
+            <div className="profile-dropdown">
+              <div className="user-info">
+                <span className="user-email">{currentUser.email}</span>
+              </div>
+              
+              <div className="dropdown-divider"></div>
+              
+              <div className="dropdown-menu">
+                <Link to="/profile" className="dropdown-item">
+                  <FiUser /> My Account
+                </Link>
+                
+                <Link to="/orders" className="dropdown-item">
+                  <FiShoppingBag /> My Orders
+                </Link>
+                
+                {isAdmin && (
+                  <Link to="/admin" className="dropdown-item admin-link">
+                    <FiSettings /> Admin Dashboard
+                  </Link>
+                )}
+                
+                <button onClick={handleLogout} className="dropdown-item logout-btn">
+                  <FiLogOut /> Logout
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+        
         <Link to="/checkout">
           <div className="cart-container">
             <img src={cartIcon} alt="Cart" />

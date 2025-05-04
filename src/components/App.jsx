@@ -16,6 +16,8 @@ import Loader from "../components/Loader.jsx";
 import NotFound from "../pages/NotFound.jsx";
 import Maintenance from "../pages/Maintenance.jsx";
 import AllProducts from "../pages/AllProducts.jsx";
+import Profile from "../pages/Profile.jsx";
+import ProtectedRoute from "../components/ProtectedRoute.jsx";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -44,7 +46,7 @@ function App() {
             <Route path="/" element={<Home />}></Route> 
             {/* Maintenance page during build time */}
             {/* <Route path="/" element={<Maintenance />}></Route> */}
-             <Route path="/load-test" element={<Loader />}></Route>
+            <Route path="/load-test" element={<Loader />}></Route>
             <Route path="/admin" element={<Admin />}></Route>
             <Route path="/login" element={<Login />}></Route>
             <Route path="/register" element={<Register />}></Route>
@@ -56,6 +58,14 @@ function App() {
             <Route path="/orders" element={<Orders />}></Route>
             <Route path="*" element={<NotFound />}></Route>
             <Route path="/all-products" element={<AllProducts />}></Route>
+            <Route 
+              path="/profile" 
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }>
+            </Route>
           </Routes>
         </CartProvider>
       )}
