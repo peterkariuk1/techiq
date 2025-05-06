@@ -1,5 +1,9 @@
 {
-    "rewrites": [
-      { "source": "/(.*)", "destination": "/" }
-    ]
-  }
+  "redirects": [
+    {
+      "source": "www.loriskenya.com",
+      "destination": "https://loriskenya.com",
+      "permanent": true
+    }
+  ]
+}
