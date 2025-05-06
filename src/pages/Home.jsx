@@ -8,7 +8,6 @@ import LadiesGrid from "../components/LadiesGrid.jsx";
 
 import Footer from "../components/Footer.jsx";
 
-
 const Home = () => {
   return (
     <div className="home-page">
@@ -19,9 +18,11 @@ const Home = () => {
       <BestSellerGrid />
       <LadiesGrid />
       <MensGrid />
+
       <Link to="/all-products">
-        <button className="view-all-button">View All Products</button>
+        <button style={{textDecoration:'none'}}className="view-all-button">View All Products</button>
       </Link>
+
       <Footer />
     </div>
   );

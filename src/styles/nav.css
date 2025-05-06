@@ -358,14 +358,14 @@ nav .right div img {
 }
 @media (max-width: 470px) {
   nav .right {
-    gap: 10px;
+    gap: 6px;
   }
   nav {
-    padding: 0px 8px 0px 4px;
+    padding: 0px 6px 0px 4px;
   }
   .searchbox input {
     padding: 3.65px;
-    width: 10rem;
+    width: 9rem;
   }
 
   .search-button-container img {
