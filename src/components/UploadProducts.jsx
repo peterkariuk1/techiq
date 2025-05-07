@@ -9,7 +9,7 @@ import { db } from "../../firebase/firebaseConfig";
 import { collection, addDoc, getDocs, query, where, Timestamp } from "firebase/firestore";
 import axios from "axios";
 
-const BACKEND_URL = 'http://localhost:5000/api';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_API_URL;
 
 const UploadProducts = () => {
   // Form state
