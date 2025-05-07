@@ -147,7 +147,7 @@
   width: 200px;
   height: 10px;
   background: #d3d3d3;
-  outline: 1px solid #ab8e66;
+  /* outline: 1px solid #ab8e66; */
   opacity: 0.7;
   -webkit-transition: 0.2s;
   transition: opacity 0.2s;
@@ -209,12 +209,13 @@
 .dropbtn {
   background-color: #ab8e66;
   color: white;
-  padding: 10px;
-  font-size: 13px;
+  padding: 3px;
+  font-size: 11px;
   border: none;
   display: flex;
   align-items: center;
   font-weight: 700;
+  margin-bottom: 12px;
 }
 
 .sort-dropdown {
@@ -226,7 +227,7 @@
   display: none;
   position: absolute;
   background-color: #f1f1f1;
-  min-width: 160px;
+  min-width: 140px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;
 }

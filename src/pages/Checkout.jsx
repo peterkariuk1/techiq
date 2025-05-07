@@ -133,7 +133,7 @@ const Checkout = () => {
     message += formData.deliveryNotes ? `Notes: ${formData.deliveryNotes}\n` : '';
     
     // WhatsApp business number - replace with the actual business number
-    const whatsappNumber = "254112713070"; // Replace with the actual number
+    const whatsappNumber = "254753380900"; // Replace with the actual number
     
     // Create WhatsApp URL
     const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;

@@ -564,3 +564,9 @@
   height: 16px;
   margin-right: 8px;
 }
+
+@media(max-width:540px){
+  .generic-text {
+    font-size: 48px;
+  }
+}
