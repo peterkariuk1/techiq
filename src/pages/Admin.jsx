@@ -6,8 +6,8 @@ import { signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import {
   FiMenu, FiX, FiHome, FiShoppingBag, FiUsers, FiPackage,
-  FiSettings, FiLogOut, FiChevronLeft, FiChevronRight,
-  FiCalendar, FiChevronDown, FiList, FiPlus, FiEdit, FiLoader
+  FiLogOut, FiChevronLeft, FiChevronRight,
+  FiChevronDown, FiList, FiPlus, FiEdit, FiLoader
 } from "react-icons/fi";
 import logoImage from "../assets/lorislogo.png";
 import AdminOrders from "../components/AdminOrders";

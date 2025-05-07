@@ -1,5 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import { useState, useEffect } from "react";
+import emailjs from '@emailjs/browser';
 import { CartProvider } from "../context/CartContext";
 import "../styles/App.css";
 import Home from "../pages/Home.jsx";
@@ -36,6 +37,12 @@ function App() {
       };
     });
   }, []);
+
+  useEffect(() => {
+    // Initialize EmailJS
+    emailjs.init("v5NvpmkGpBwe7W6nZ");
+  }, []);
+
   return (
     <>
       {isLoading ? (
@@ -43,7 +50,7 @@ function App() {
       ) : (
         <CartProvider>
           <Routes>
-            <Route path="/" element={<Home />}></Route> 
+            <Route path="/" element={<Home />}></Route>
             {/* Maintenance page during build time */}
             {/* <Route path="/" element={<Maintenance />}></Route> */}
             <Route path="/load-test" element={<Loader />}></Route>
@@ -58,8 +65,8 @@ function App() {
             <Route path="/orders" element={<Orders />}></Route>
             <Route path="*" element={<NotFound />}></Route>
             <Route path="/all-products" element={<AllProducts />}></Route>
-            <Route 
-              path="/profile" 
+            <Route
+              path="/profile"
               element={
                 <ProtectedRoute>
                   <Profile />

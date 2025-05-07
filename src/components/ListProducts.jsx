@@ -19,7 +19,7 @@ function ListProducts() {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const productsQuery = query(collection(db, 'test-products'), orderBy('name'));
+        const productsQuery = query(collection(db, 'products'), orderBy('name'));
         const querySnapshot = await getDocs(productsQuery);
         
         const productsData = querySnapshot.docs.map(doc => ({
