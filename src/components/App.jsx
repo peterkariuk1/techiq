@@ -24,18 +24,12 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    let loaded = 0;
-
-    bannerImages.forEach((banner) => {
-      const img = new Image();
-      img.src = banner.url;
-      img.onload = () => {
-        loaded++;
-        if (loaded === bannerImages.length) {
-          setIsLoading(false);
-        }
-      };
-    });
+    const firstImage = new Image();
+    firstImage.src = bannerImages[0]?.url;
+  
+    firstImage.onload = () => {
+      setIsLoading(false);
+    };
   }, []);
 
   useEffect(() => {
