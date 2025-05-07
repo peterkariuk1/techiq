@@ -7,7 +7,8 @@ import seeMoreIcon from "../assets/see-more.png";
 import { db } from "../../firebase/firebaseConfig.js";
 import { collection, getDocs, query, limit, orderBy } from "firebase/firestore";
 import { useCart } from "../context/CartContext";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { FiArrowLeft } from 'react-icons/fi';
 
 const Grid = () => {
   const [products, setProducts] = useState([]);
@@ -33,12 +34,20 @@ const Grid = () => {
   // Add search params from URL
   const [searchParams] = useSearchParams();
 
+  // Add navigate function near other hooks
+  const navigate = useNavigate();
+
   // Get filter values from URL
   const minPrice = searchParams.get("min_price") ? parseInt(searchParams.get("min_price")) : 0;
   const maxPrice = searchParams.get("max_price") ? parseInt(searchParams.get("max_price")) : Infinity;
   const category = searchParams.get("category") || "";
   const sortBy = searchParams.get("sort") || "newest";
   const searchQuery = searchParams.get("search") || "";
+
+  // Add handleBack function
+  const handleBack = () => {
+    navigate('/');
+  };
 
   // Function to show notification
   const showNotification = (product, qty = 1) => {
@@ -80,7 +89,7 @@ const Grid = () => {
 
   // Add to cart function
   const handleAddToCart = () => {
-    if (selectedProduct) {
+    if (selectedProduct && selectedProduct.inStock !== false) {
       // Add the selected product with quantity
       addToCart(selectedProduct, quantity);
 
@@ -162,10 +171,10 @@ const Grid = () => {
     async function fetchProducts() {
       try {
         setLoading(true);
-        console.log("Fetching products from test-products collection...");
+        console.log("Fetching products from products collection...");
 
-        // Reference to the test-products collection
-        const productsRef = collection(db, "test-products");
+        // Reference to the products collection
+        const productsRef = collection(db, "products");
         
         // First check if there are any products at all (for debugging)
         const testSnapshot = await getDocs(productsRef);
@@ -230,7 +239,7 @@ const Grid = () => {
           category: doc.data().category || "Uncategorized"
         }));
 
-        console.log(`Fetched ${productsData.length} products from test-products collection`);
+        console.log(`Fetched ${productsData.length} products from products collection`);
         
         // Log first product for debugging
         if (productsData.length > 0) {
@@ -373,6 +382,11 @@ const Grid = () => {
 
   return (
     <div id='grid-section' className="paginated-grid-section">
+      {/* Add back button at the top */}
+      <button onClick={handleBack} className="back-button">
+        <FiArrowLeft /> Back to Home
+      </button>
+      
       {/* Add notification component at the top */}
       {notification.visible && (
         <div className="cart-notification">
@@ -431,11 +445,23 @@ const Grid = () => {
                     <span className="bestseller-text">Best Seller</span>
                   </div>
                 )}
+                
+                {/* Add out of stock overlay */}
+                {product.inStock === false && (
+                  <div className="out-of-stock-overlay">
+                    <span>Out of Stock</span>
+                  </div>
+                )}
+                
                 <div className="cart-options">
                   <div title="Share" onClick={() => handleShare(product)}>
                     <img className="share--icon" src={shareIcon} alt="Share" />
                   </div>
-                  <div title="Add to Cart" onClick={() => quickAddToCart(product, 1)}>
+                  <div 
+                    title={product.inStock === false ? "Out of Stock" : "Add to Cart"} 
+                    onClick={() => product.inStock !== false && quickAddToCart(product, 1)}
+                    className={product.inStock === false ? "disabled-cart-option" : ""}
+                  >
                     <img className="cart--icon" src={addToCartIcon} alt="Add to cart" />
                   </div>
                   <div
@@ -460,6 +486,16 @@ const Grid = () => {
                   <img src={categoryIcon} alt="Category" />
                   {product.category || 'Uncategorized'}
                 </p>
+                
+                {/* Add quantities display */}
+                {product.quantities && product.quantities.length > 0 && (
+                  <div className="grid-item-quantities">
+                    {product.quantities.map((qty, index) => (
+                      <span key={index} className="quantity-chip">{qty}</span>
+                    ))}
+                  </div>
+                )}
+                
                 <p className="grid-item-price">{formatPrice(product.price)}</p>
               </div>
             ))}

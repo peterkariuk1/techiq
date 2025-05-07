@@ -225,6 +225,31 @@ h3 {
   margin-top: 15px;
 }
 
+/* Back button styling */
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-weight: 500;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 8px 0;
+  margin-bottom: 20px;
+  transition: color 0.2s;
+}
+
+.back-button:hover {
+  color: #9a7c58;
+  text-decoration: underline;
+}
+
+.back-button svg {
+  font-size: 18px;
+}
+
 @media (max-width: 768px) {
   .form-row {
     flex-direction: column;
@@ -245,6 +270,11 @@ h3 {
   
   .profile-section {
     padding: 15px;
+  }
+
+  .back-button {
+    margin-bottom: 16px;
+    font-size: 14px;
   }
 }
 

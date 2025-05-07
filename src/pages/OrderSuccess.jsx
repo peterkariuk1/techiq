@@ -188,7 +188,7 @@ const OrderSuccess = () => {
             <div className="contact-info">
               <p>Questions about your order? Contact us at:</p>
               <p>
-                <strong>Email:</strong> support@loriskenya.com
+                <strong>Email:</strong> loriskenyaltd@gmail.com
               </p>
               <p>
                 <strong>Phone:</strong> +254 712 345 678

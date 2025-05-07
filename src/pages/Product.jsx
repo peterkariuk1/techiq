@@ -37,7 +37,7 @@ const Product = () => {
 
       try {
         setLoading(true);
-        const productRef = doc(db, "test-products", productId);
+        const productRef = doc(db, "products", productId);
         const productSnap = await getDoc(productRef);
 
         if (productSnap.exists()) {

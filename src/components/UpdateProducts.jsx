@@ -20,7 +20,7 @@ function UpdateProducts() {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const productsQuery = query(collection(db, 'test-products'), orderBy('name'));
+        const productsQuery = query(collection(db, 'products'), orderBy('name'));
         const querySnapshot = await getDocs(productsQuery);
 
         const productsData = querySnapshot.docs.map(doc => ({
@@ -85,7 +85,7 @@ function UpdateProducts() {
   // Save product changes
   const handleSaveEdit = async (productId) => {
     try {
-      const productRef = doc(db, 'test-products', productId);
+      const productRef = doc(db, 'products', productId);
       await updateDoc(productRef, {
         price: parseFloat(editForm.price),
         inStock: editForm.inStock
@@ -114,7 +114,7 @@ function UpdateProducts() {
   // Toggle product stock status
   const toggleStockStatus = async (product) => {
     try {
-      const productRef = doc(db, 'test-products', product.id);
+      const productRef = doc(db, 'products', product.id);
       await updateDoc(productRef, {
         inStock: !product.inStock
       });

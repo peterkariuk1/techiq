@@ -58,11 +58,15 @@ const Dashboard = ({ onNavigateToTab }) => {
         }));
 
         // Fetch customers
-        const customersSnapshot = await getDocs(collection(db, 'users'));
+        const customersQuery = query(
+          collection(db, 'users'),
+          where('role', '==', 'customer')
+        );
+        const customersSnapshot = await getDocs(customersQuery);
         const customersCount = customersSnapshot.size;
 
         // Fetch products
-        const productsQuery = query(collection(db, 'test-products'));
+        const productsQuery = query(collection(db, 'products'));
         const productsSnapshot = await getDocs(productsQuery);
         const productsData = productsSnapshot.docs.map(doc => ({
           id: doc.id,

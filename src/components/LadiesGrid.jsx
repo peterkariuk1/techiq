@@ -36,8 +36,8 @@ const LadiesGrid = () => {
       try {
         setLoading(true);
         
-        // Create a query against the "test-products" collection where gender is "women"
-        const productsRef = collection(db, "test-products");
+        // Create a query against the "products" collection where gender is "women"
+        const productsRef = collection(db, "products");
         const womenQuery = query(productsRef, where("gender", "==", "women"));
         
         const querySnapshot = await getDocs(womenQuery);
@@ -125,7 +125,7 @@ const LadiesGrid = () => {
 
   // Add to cart function
   const handleAddToCart = () => {
-    if (selectedProduct) {
+    if (selectedProduct && selectedProduct.inStock !== false) {
       // Add the selected product with quantity
       addToCart(selectedProduct, quantity);
 
@@ -273,6 +273,12 @@ const LadiesGrid = () => {
         <div className="grid-container">
           {visibleProducts.map((product) => (
             <div className="grid-item" key={product.id}>
+              {/* Add out of stock overlay */}
+              {product.inStock === false && (
+                  <div className="out-of-stock-overlay">
+                    <span>Out of Stock</span>
+                  </div>
+                )}
               <div className="cart-options">
                 <div
                   title="Share"
@@ -316,6 +322,16 @@ const LadiesGrid = () => {
                 <img src={categoryIcon} alt="Category" />
                 {product.category || "Uncategorized"}
               </p>
+              
+              {/* Add quantities display */}
+              {product.quantities && product.quantities.length > 0 && (
+                <div className="grid-item-quantities">
+                  {product.quantities.map((qty, index) => (
+                    <span key={index} className="quantity-chip">{qty}</span>
+                  ))}
+                </div>
+              )}
+              
               <p className="grid-item-price">{formatPrice(product.price)}</p>
             </div>
           ))}
@@ -349,6 +365,18 @@ const LadiesGrid = () => {
                   <span className="category-label">Category: </span>
                   {selectedProduct.category || 'Uncategorized'}
                 </p>
+                
+                {/* Add quantities display in modal */}
+                {selectedProduct.quantities && selectedProduct.quantities.length > 0 && (
+                  <div className="product-modal-quantities">
+                    <h4>Available Sizes:</h4>
+                    <div className="quantities-list">
+                      {selectedProduct.quantities.map((qty, index) => (
+                        <span key={index} className="quantity-badge">{qty}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 
                 {/* Share button */}
                 <button className="product-share-btn" onClick={() => handleShare(selectedProduct)}>

@@ -2,10 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { auth, db } from '../../firebase/firebaseConfig';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { updateEmail, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
-import { FiLoader, FiEdit, FiSave, FiX } from 'react-icons/fi';
+import { FiLoader, FiEdit, FiSave, FiX, FiArrowLeft } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
 import '../styles/profile.css';
 
 const Profile = () => {
+  const navigate = useNavigate();
+
   // State for user data
   const [userData, setUserData] = useState({
     firstName: '',
@@ -177,6 +180,10 @@ const Profile = () => {
       setUpdating(false);
     }
   };
+
+  const handleBack = () => {
+    navigate('/');
+  };
   
   if (loading) {
     return (
@@ -189,6 +196,10 @@ const Profile = () => {
   
   return (
     <div className="profile-page">
+      <button onClick={handleBack} className="back-button">
+        <FiArrowLeft /> Back to Home
+      </button>
+      
       <div className="profile-container">
         <h1>My Account</h1>
         
@@ -274,7 +285,7 @@ const Profile = () => {
             <h3>Shipping Address</h3>
             
             <div className="form-group">
-              <label htmlFor="street">Street Address</label>
+              <label htmlFor="street">Delivery Address</label>
               <input
                 type="text"
                 id="street"
@@ -299,30 +310,17 @@ const Profile = () => {
               </div>
               
               <div className="form-group">
-                <label htmlFor="county">County</label>
+                <label htmlFor="postalCode">Postal Code</label>
                 <input
                   type="text"
-                  id="county"
-                  name="address.county"
-                  value={userData.address.county}
+                  id="postalCode"
+                  name="address.postalCode"
+                  value={userData.address.postalCode}
                   onChange={handleChange}
                   disabled={!editMode}
                 />
               </div>
             </div>
-            
-            <div className="form-group">
-              <label htmlFor="postalCode">Postal Code</label>
-              <input
-                type="text"
-                id="postalCode"
-                name="address.postalCode"
-                value={userData.address.postalCode}
-                onChange={handleChange}
-                disabled={!editMode}
-              />
-            </div>
-            
             {editMode && (
               <div className="form-actions">
                 <button 

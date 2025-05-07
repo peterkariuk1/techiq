@@ -9,7 +9,7 @@ import { db } from "../../firebase/firebaseConfig";
 import { collection, addDoc, getDocs, query, where, Timestamp } from "firebase/firestore";
 import axios from "axios";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:5000/api';
+const BACKEND_URL = 'http://localhost:5000/api';
 
 const UploadProducts = () => {
   // Form state
@@ -48,7 +48,7 @@ const UploadProducts = () => {
     const fetchProductStats = async () => {
       try {
         // Get all products
-        const productsRef = collection(db, "test-products");
+        const productsRef = collection(db, "products");
         const productsSnapshot = await getDocs(productsRef);
         
         // Count products
@@ -230,7 +230,7 @@ const UploadProducts = () => {
         createdAt: Timestamp.now()
       };
       
-      await addDoc(collection(db, "test-products"), productData);
+      await addDoc(collection(db, "products"), productData);
       
       // Success!
       setUploadProgress(100);
@@ -475,13 +475,6 @@ const UploadProducts = () => {
                   >
                     <div className="radio-dot"></div>
                     <span>Unisex</span>
-                  </div>
-                  <div 
-                    className={`radio-button ${formData.gender === 'unspecified' ? 'active' : ''}`}
-                    onClick={() => handleRadioChange('gender', 'None')}
-                  >
-                    <div className="radio-dot"></div>
-                    <span>None</span>
                   </div>
                 </div>
               </div>
