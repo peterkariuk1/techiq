@@ -12,7 +12,7 @@ const MenPerfumes = () => {
   // State for products
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [visibleCount, setVisibleCount] = useState(5);
+  const [visibleCount, setVisibleCount] = useState(8);
   const [visibleProducts, setVisibleProducts] = useState([]);
   const [isAllLoaded, setIsAllLoaded] = useState(false);
 

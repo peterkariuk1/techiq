@@ -5,7 +5,7 @@ import diffuserImage from "../assets/lorisdiffusers.jpg";
 import frequencesImage from "../assets/lorisfrequence.png";
 import nicheImage from "../assets/lorisniche.jpeg";
 import bodyCareImage from "../assets/lorisbodycare.webp";
-import perfumeImage from "../assets/lorisperfume.jpg";
+import perfumeImage from "../assets/oudperfume.jpeg";
 import cologneImage from "../assets/loriscologne.jpg";
 import autoPerfumeImage from "../assets/lorisaautoperfume.jpg";
 import ladiesImage from "../assets/womanperfume.jpeg";
