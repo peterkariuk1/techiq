@@ -9,7 +9,7 @@ import { db } from "../../firebase/firebaseConfig";
 import { collection, addDoc, getDocs, query, where, Timestamp } from "firebase/firestore";
 import axios from "axios";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_API_URL;
+const BACKEND_URL = "https://loriskenya-backend-production.up.railway.app/api";
 
 const UploadProducts = () => {
   // Form state
