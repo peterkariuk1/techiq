@@ -15,7 +15,7 @@ import Orders from "../pages/Orders.jsx";
 import { bannerImages } from "../components/BannerImages.jsx";
 import Loader from "../components/Loader.jsx";
 import NotFound from "../pages/NotFound.jsx";
-import Maintenance from "../pages/Maintenance.jsx";
+// import Maintenance from "../pages/Maintenance.jsx";
 import AllProducts from "../pages/AllProducts.jsx";
 import Profile from "../pages/Profile.jsx";
 import ProtectedRoute from "../components/ProtectedRoute.jsx";

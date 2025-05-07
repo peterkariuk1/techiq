@@ -1,0 +1,83 @@
+@import "./App.css";
+
+footer {
+  background-color: var(--secondary-color);
+  color: var(--tertiary-color);
+  display: flex;
+  flex-direction: column;
+  /* width: 100%; */
+  padding: 10px 2px;
+  margin: 30px 0px 0px 0px;
+  align-items: center;
+}
+footer h2 {
+  text-align: center;
+}
+footer .orders-desc {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding: 6px 20px;
+}
+footer .orders-desc div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+footer .orders-desc img {
+  width: 30px;
+  height: 30px;
+}
+footer .orders-desc p {
+  margin: 2px 0px;
+  font-size: 12px;
+}
+
+@media (max-width: 470px) {
+  footer h2 {
+    font-size: 16px;
+  }
+  footer .orders-desc img {
+    width: 23px;
+    height: 23px;
+  }
+  footer .orders-desc p {
+    font-size: 9px;
+  }
+}
+
+/* Site maps, Q uick Links, Contact sedction */
+footer .centre {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding: 20px 12px;
+  margin: 20px 0px;
+  justify-items: center;
+}
+.payments-container {
+  display: flex;
+  gap: 4px;
+}
+.payments-container img,
+.contacts-section img {
+  width: 30px;
+  height: 30px;
+  opacity: 0.5;
+  transition: 0.3s ease-in-out opacity;
+}
+.payments-container img:hover,.contacts-section img:hover {
+  opacity: 1;
+  cursor: pointer;
+}
+.contacts-section img{
+  margin-right: 6px;
+}
+@media(max-width:670px){
+  footer .centre {
+    display: grid;
+    grid-template-columns: 1fr;
+    padding: 20px 12px;
+    margin: 20px 0px;
+    justify-items: start;
+  }
+}

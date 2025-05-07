@@ -164,10 +164,9 @@ const Checkout = () => {
     message += `Address: ${formData.address}\n`;
     message += `City: ${formData.city}\n`;
     message += formData.postalCode ? `Postal Code: ${formData.postalCode}\n` : '';
-    message += formData.deliveryNotes ? `Notes: ${formData.deliveryNotes}\n` : '';
-
-    const whatsappNumber = "254112713070";
-
+    message += formData.deliveryNotes ? `Notes: ${formData.deliveryNotes}\n` : ''; 
+    // WhatsApp business number - replace with the actual business number
+    const whatsappNumber = "254753380900"; // Replace with the actual number
     const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
 
     const saveOrderAndOpenWhatsApp = async () => {
