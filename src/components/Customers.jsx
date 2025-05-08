@@ -166,7 +166,7 @@ function Customers() {
         address.city,
         address.postalCode
       ]
-        .filter(Boolean) // Remove empty values
+        .filter(Boolean) // Remove empty values from display
         .join(', ') || 'Not provided';
     }
     

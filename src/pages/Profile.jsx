@@ -127,7 +127,7 @@ const Profile = () => {
         updatedAt: new Date()
       });
       
-      // Update email if changed
+      // Update email if changed by user
       if (userData.email !== currentUser.email) {
         await updateEmail(currentUser, userData.email);
       }
