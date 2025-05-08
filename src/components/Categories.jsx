@@ -21,7 +21,7 @@ const categories = [
     { id: 6, name: "Body Care", image: bodyCareImage },
     { id: 7, name: "Auto Perfumes", image: autoPerfumeImage },
     { id: 8, name: "Loris Perfumes", image: perfumeImage },
-    { id: 9, name: "Cologne", image: cologneImage },
+
 ];
 
 function Categories() {
@@ -54,17 +54,7 @@ function Categories() {
         return () => clearTimeout(timer);
     }, [selectedCategory]);
     
-    // Function to scroll left or right by fixed pixels
-    const scroll = (direction) => {
-        if (scrollRef.current) {
-            const { scrollLeft, clientWidth } = scrollRef.current;
-            const scrollAmount = direction === "left" ? -clientWidth : clientWidth;
-            scrollRef.current.scrollTo({
-                left: scrollLeft + scrollAmount,
-                behavior: "smooth",
-            });
-        }
-    };
+
       
     // Updated to handle category selection for men/women
     const handleCategoryClick = (categoryName) => {
@@ -103,9 +93,9 @@ function Categories() {
         <div className="filters-section">
             <div className="category-section">
                 <h2 className="section-title">Browse Categories</h2>
-                <button className="nav-arrow left" onClick={() => scroll("left")}>
+                 {/*<button className="nav-arrow left" onClick={() => scroll("left")}>
                     {"<"}
-                </button>
+                </button>*/}
                 <div className="slider-wrapper">
                     <div className="category-slider" ref={scrollRef}>
                         {categories.map((cat) => (
@@ -120,9 +110,9 @@ function Categories() {
                         ))}
                     </div>
                 </div>
-                <button className="nav-arrow right" onClick={() => scroll("right")}>
+                {/*<button className="nav-arrow right" onClick={() => scroll("right")}>
                     {">"}
-                </button>
+                </button>*/}
             </div>
             {(selectedCategory) && (
                 <button className="clear-all-filters" onClick={clearAllFilters}>
