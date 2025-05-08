@@ -18,7 +18,6 @@ const Profile = () => {
     address: {
       street: '',
       city: '',
-      county: '',
       postalCode: ''
     }
   });
@@ -56,7 +55,6 @@ const Profile = () => {
               address: data.address || {
                 street: '',
                 city: '',
-                county: '',
                 postalCode: ''
               }
             });
@@ -110,6 +108,13 @@ const Profile = () => {
     setError(null);
     setSuccess(null);
     
+    // Ensure address is properly structured
+    const addressToSave = {
+      street: userData.address?.street || '',
+      city: userData.address?.city || '',
+      postalCode: userData.address?.postalCode || ''
+    };
+    
     try {
       const currentUser = auth.currentUser;
       
@@ -118,11 +123,11 @@ const Profile = () => {
         firstName: userData.firstName,
         lastName: userData.lastName,
         phone: userData.phone,
-        address: userData.address,
+        address: addressToSave,
         updatedAt: new Date()
       });
       
-      // Update email if changed
+      // Update email if changed by user
       if (userData.email !== currentUser.email) {
         await updateEmail(currentUser, userData.email);
       }

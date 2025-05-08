@@ -156,6 +156,23 @@ function Customers() {
     return new Date(date).toLocaleDateString();
   };
 
+  // Format address helper
+  const formatAddress = (address) => {
+    if (!address) return 'Not provided';
+    
+    if (typeof address === 'object') {
+      return [
+        address.street,
+        address.city,
+        address.postalCode
+      ]
+        .filter(Boolean) // Remove empty values from display
+        .join(', ') || 'Not provided';
+    }
+    
+    return address;
+  };
+
   return (
     <div className="customers-container">
       <div className="customers-header">
@@ -318,7 +335,9 @@ function Customers() {
                   </td>
                   <td>{formatDate(customer.joinDate)}</td>
                   <td>KSh {customer.ltv.toLocaleString()}</td>
-                  <td>{customer.address || 'N/A'}</td>
+                  <td>
+                    {formatAddress(customer.address)}
+                  </td>
                   <td>
                     <button 
                       className="view-details-btn"
@@ -364,7 +383,17 @@ function Customers() {
                     <FiMail /> Email
                   </div>
                   <div className="detail-value">
-                    {selectedCustomer.email || 'Not provided'}
+                    {selectedCustomer.address ? 
+                      (typeof selectedCustomer.address === 'object' ?
+                        [
+                          selectedCustomer.address.street,
+                          selectedCustomer.address.city,
+                          selectedCustomer.address.postalCode
+                        ]
+                          .filter(Boolean)
+                          .join(', ') || 'Not provided'
+                        : selectedCustomer.address)
+                      : 'Not provided'}
                   </div>
                 </div>
                 <div className="detail-row">
@@ -384,7 +413,7 @@ function Customers() {
                     <FiMapPin /> Location
                   </div>
                   <div className="detail-value">
-                    {selectedCustomer.address || 'Not provided'}
+                    {formatAddress(selectedCustomer.address)}
                   </div>
                 </div>
               </div>
