@@ -6,7 +6,7 @@ import frequencesImage from "../assets/lorisfrequence.png";
 import nicheImage from "../assets/lorisniche.jpeg";
 import bodyCareImage from "../assets/lorisbodycare.webp";
 import perfumeImage from "../assets/oudperfume.jpeg";
-import cologneImage from "../assets/loriscologne.jpg";
+// import cologneImage from "../assets/loriscologne.jpg";
 import autoPerfumeImage from "../assets/lorisaautoperfume.jpg";
 import ladiesImage from "../assets/womanperfume.jpeg";
 import menImage from "../assets/manperfume.jpeg";
