@@ -5,5 +5,11 @@
       "destination": "https://loriskenya.com",
       "permanent": true
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
   ]
 }
