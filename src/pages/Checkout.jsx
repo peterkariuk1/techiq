@@ -145,60 +145,12 @@ const Checkout = () => {
     const whatsappNumber = "254753380900";
     const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
 
-    const saveOrderAndOpenWhatsApp = async () => {
-      try {
-        const user = auth.currentUser;
-
-        const orderData = {
-          id: orderId,
-          userId: user ? user.uid : 'guest',
-          userEmail: user ? user.email : formData.email,
-          items: cartItems.map(item => ({
-            id: item.id,
-            name: item.name,
-            price: item.price || item.selling_price,
-            quantity: item.quantity,
-            category: item.category || 'Uncategorized',
-            image: item.image || ''
-          })),
-          total,
-          status: "pending",
-          orderMethod: "whatsapp",
-          shippingAddress: {
-            fullName: formData.fullName,
-            phone: formData.phone,
-            email: formData.email,
-            notes: formData.deliveryNotes
-          },
-          createdAt: new Date(),
-          updatedAt: new Date()
-        };
-
-        if (user) {
-          await setDoc(doc(db, "users", user.uid, "orders", orderId), orderData);
-        }
-
-        await setDoc(doc(db, "orders", orderId), {
-          ...orderData,
-          userDisplayName: user ? user.displayName || '' : formData.fullName
-        });
-
-        await sendOrderConfirmationEmail(orderData);
-
-        clearCart();
-
-        window.open(whatsappURL, '_blank');
-
-        navigate(`/order-success?orderId=${orderId}&via=whatsapp`);
-      } catch (error) {
-        console.error("Error saving WhatsApp order:", error);
-        alert("We encountered an error processing your order. You can still continue to WhatsApp.");
-        window.open(whatsappURL, '_blank');
-        setIsProcessing(false);
-      }
+    const OpenWhatsApp = async () => {
+      clearCart();
+      window.open(whatsappURL, '_blank');
     };
 
-    saveOrderAndOpenWhatsApp();
+    OpenWhatsApp();
   };
 
   const handleCheckout = () => {
