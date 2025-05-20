@@ -1,50 +1,58 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
-import logoImage from "../assets/lorislogo.png";
-import searchIcon from "../assets/search.png";
-import cartIcon from "../assets/cart.png";
-import profileIcon from "../assets/user.png";
+import logoImage from "../assets/techiq-logo.png";
+import searchIcon from "../assets/search2.png";
+import cartIcon from "../assets/cart2.png";
+import loveIcon from "../assets/love2.png";
+import profileIcon from "../assets/profile2.png";
 import "../styles/nav.css";
 import { useCart } from "../context/CartContext";
 import { db, auth } from "../../firebase/firebaseConfig.js";
-import { collection, getDocs, query, limit, getDoc, doc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  query,
+  limit,
+  getDoc,
+  doc,
+} from "firebase/firestore";
 import { signOut } from "firebase/auth";
 import { FiLogOut, FiUser, FiSettings, FiShoppingBag } from "react-icons/fi";
 
 const placeholders = [
-  "Loris Peach Reed Diffuser",
+  "HP Pavilion x360 Touchscreen",
   "Search by Category",
-  "Loris No. 102 Ocean Breeze",
+  "Dell Inspiron 15 3000 Series",
   "Search by Name",
-  "Loris Oud Touch",
+  "Lenovo ThinkPad X1 Carbon",
   "Search by Type",
-  "Loris Tobacco Vanilla",
+  "MacBook Air M2 Chip",
   "Search by Category",
-  "Loris Inspired by Sauvage",
+  "HP EliteBook 840 G9",
   "Search by Name",
-  "Loris Velvet Rose",
+  "Dell XPS 13 Plus OLED",
   "Search by Type",
-  "Loris Black Orchid",
+  "Lenovo IdeaPad Slim 5",
   "Search by Category",
   "Search by Name",
-  "Loris No. 201 Floral Musk",
+  "MacBook Pro 14-inch M3",
   "Search by Type",
-  "Loris No. 54 Woody Citrus",
+  "Dell Latitude 7430",
   "Search by Category",
-  "Loris Intense Leather",
+  "HP Spectre x360 14",
   "Search by Name",
-  "Loris Sweet Caramel",
+  "Lenovo Legion 5 Pro",
   "Search by Type",
-  "Loris Amber Elixir",
+  "MacBook Air 15-inch M2",
   "Search by Category",
   "Search by Name",
-  "Loris Dark Vanilla",
+  "HP Envy 16 Creator Edition",
   "Search by Type",
-  "Loris White Musk",
+  "Dell G15 Gaming Laptop",
   "Search by Category",
-  "Loris Fresh Aqua",
+  "Lenovo Yoga 9i Gen 8",
   "Search by Name",
-  "Loris Fruity Bloom",
+  "Asus ROG Zephyrus G14",
   "Search by Type",
 ];
 
@@ -133,15 +141,24 @@ const Header = () => {
       setIsLoading(true);
 
       const results = allProducts.filter((product) => {
-        if (product.name && product.name.toLowerCase().includes(value.toLowerCase())) {
+        if (
+          product.name &&
+          product.name.toLowerCase().includes(value.toLowerCase())
+        ) {
           return true;
         }
 
-        if (product.category && product.category.toLowerCase().includes(value.toLowerCase())) {
+        if (
+          product.category &&
+          product.category.toLowerCase().includes(value.toLowerCase())
+        ) {
           return true;
         }
 
-        if (product.description && product.description.toLowerCase().includes(value.toLowerCase())) {
+        if (
+          product.description &&
+          product.description.toLowerCase().includes(value.toLowerCase())
+        ) {
           return true;
         }
 
@@ -155,13 +172,18 @@ const Header = () => {
         category: p.category,
       }));
 
-      const categories = [...new Set(results.map((p) => p.category).filter(Boolean))];
+      const categories = [
+        ...new Set(results.map((p) => p.category).filter(Boolean)),
+      ];
       const categorySuggestions = categories.slice(0, 3).map((c) => ({
         type: "category",
         name: c,
       }));
 
-      const combinedSuggestions = [...productSuggestions, ...categorySuggestions];
+      const combinedSuggestions = [
+        ...productSuggestions,
+        ...categorySuggestions,
+      ];
 
       setSuggestions(combinedSuggestions);
       setShowSuggestions(true);
@@ -174,7 +196,10 @@ const Header = () => {
 
   const handleSearch = (term = inputValue) => {
     if (term.trim()) {
-      const newRecent = [term, ...recentSearches.filter((s) => s !== term)].slice(0, 5);
+      const newRecent = [
+        term,
+        ...recentSearches.filter((s) => s !== term),
+      ].slice(0, 5);
       setRecentSearches(newRecent);
       localStorage.setItem("recentSearches", JSON.stringify(newRecent));
 
@@ -187,12 +212,19 @@ const Header = () => {
 
   const handleSuggestionClick = (suggestion) => {
     if (suggestion.type === "product") {
-      navigate(`/product/?category=${encodeURIComponent(suggestion.category || "Uncategorized")}&pid=${suggestion.id}`);
+      navigate(
+        `/product/?category=${encodeURIComponent(
+          suggestion.category || "Uncategorized"
+        )}&pid=${suggestion.id}`
+      );
     } else if (suggestion.type === "category") {
       navigate(`/?category=${encodeURIComponent(suggestion.name)}`);
     }
 
-    const newRecent = [suggestion.name, ...recentSearches.filter((s) => s !== suggestion.name)].slice(0, 5);
+    const newRecent = [
+      suggestion.name,
+      ...recentSearches.filter((s) => s !== suggestion.name),
+    ].slice(0, 5);
     setRecentSearches(newRecent);
     localStorage.setItem("recentSearches", JSON.stringify(newRecent));
 
@@ -302,7 +334,9 @@ const Header = () => {
           value={inputValue}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          onFocus={() => inputValue.trim().length > 1 && setShowSuggestions(true)}
+          onFocus={() =>
+            inputValue.trim().length > 1 && setShowSuggestions(true)
+          }
         />
         {inputValue === "" && (
           <span className={`placeholder-text ${animate}`}>
@@ -310,7 +344,7 @@ const Header = () => {
           </span>
         )}
         <div className="search-button-container" onClick={() => handleSearch()}>
-          <img src={searchIcon} alt="Search" />
+          <img className="search-logo-image" src={searchIcon} alt="Search" />
         </div>
 
         {showSuggestions && (
@@ -325,7 +359,11 @@ const Header = () => {
                   <li
                     key={`${suggestion.type}-${index}`}
                     onClick={() => handleSuggestionClick(suggestion)}
-                    className={suggestion.type === "category" ? "category-suggestion" : ""}
+                    className={
+                      suggestion.type === "category"
+                        ? "category-suggestion"
+                        : ""
+                    }
                   >
                     {suggestion.type === "category" ? (
                       <>
@@ -337,7 +375,9 @@ const Header = () => {
                         <span className="suggestion-icon">🔍</span>
                         <span className="product-suggestion">
                           <strong>{suggestion.name}</strong>
-                          {suggestion.category && <small>{suggestion.category}</small>}
+                          {suggestion.category && (
+                            <small>{suggestion.category}</small>
+                          )}
                         </span>
                       </>
                     )}
@@ -364,46 +404,6 @@ const Header = () => {
       </div>
 
       <div className="right">
-        <div className="nav-profile-container" ref={profileDropdownRef}>
-          <div 
-            className="profile-icon-wrapper" 
-            onClick={() => isAuthenticated ? setShowProfileMenu(!showProfileMenu) : navigate("/login")}
-          >
-            <img src={profileIcon} alt="Profile" />
-            {isAuthenticated && <span className="auth-indicator" />}
-          </div>
-          
-          {isAuthenticated && showProfileMenu && (
-            <div className="profile-dropdown">
-              <div className="user-info">
-                <span className="user-email">{currentUser.email}</span>
-              </div>
-              
-              <div className="dropdown-divider"></div>
-              
-              <div className="dropdown-menu">
-                <Link to="/profile" className="dropdown-item">
-                  <FiUser /> My Account
-                </Link>
-                
-                <Link to="/orders" className="dropdown-item">
-                  <FiShoppingBag /> My Orders
-                </Link>
-                
-                {isAdmin && (
-                  <Link to="/admin" className="dropdown-item admin-link">
-                    <FiSettings /> Admin Dashboard
-                  </Link>
-                )}
-                
-                <button onClick={handleLogout} className="dropdown-item logout-btn">
-                  <FiLogOut /> Logout
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-        
         <Link to="/checkout">
           <div className="cart-container">
             <img src={cartIcon} alt="Cart" />
@@ -414,6 +414,61 @@ const Header = () => {
             )}
           </div>
         </Link>
+        <div className="cart-container">
+          <img src={loveIcon} alt="love" />
+          {cartItemCount > 0 && (
+            <div className="cart-counter-container">
+              <p>3</p>
+            </div>
+          )}
+        </div>
+
+        <div className="nav-profile-container" ref={profileDropdownRef}>
+          <div
+            className="profile-icon-wrapper"
+            onClick={() =>
+              isAuthenticated
+                ? setShowProfileMenu(!showProfileMenu)
+                : navigate("/login")
+            }
+          >
+            <img src={profileIcon} alt="Profile" />
+            {isAuthenticated && <span className="auth-indicator" />}
+          </div>
+
+          {isAuthenticated && showProfileMenu && (
+            <div className="profile-dropdown">
+              <div className="user-info">
+                <span className="user-email">{currentUser.email}</span>
+              </div>
+
+              <div className="dropdown-divider"></div>
+
+              <div className="dropdown-menu">
+                <Link to="/profile" className="dropdown-item">
+                  <FiUser /> My Account
+                </Link>
+
+                <Link to="/orders" className="dropdown-item">
+                  <FiShoppingBag /> My Orders
+                </Link>
+
+                {isAdmin && (
+                  <Link to="/admin" className="dropdown-item admin-link">
+                    <FiSettings /> Admin Dashboard
+                  </Link>
+                )}
+
+                <button
+                  onClick={handleLogout}
+                  className="dropdown-item logout-btn"
+                >
+                  <FiLogOut /> Logout
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </nav>
   );

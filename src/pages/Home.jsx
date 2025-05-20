@@ -6,10 +6,12 @@ import MensGrid from "../components/MensGrid.jsx";
 import BestSellerGrid from "../components/BestSellerGrid.jsx";
 import LadiesGrid from "../components/LadiesGrid.jsx";
 import Footer from "../components/Footer.jsx";
+import ContactBanner from "../components/ContactBanner.jsx";
 
 const Home = () => {
   return (
     <div className="home-page">
+      <ContactBanner/>
       <Header />
       <Banner />
       <Categories />
