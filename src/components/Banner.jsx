@@ -37,7 +37,7 @@ const Banner = () => {
             <h1>{img.text1}</h1>
             <h3> {img.text2}</h3>
             <button onClick={scrollToGrid} className="cta-banner-button">
-              Shop Now
+              Discover
             </button>
           </div>
         </div>

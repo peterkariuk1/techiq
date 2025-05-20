@@ -1,73 +1,53 @@
-import banner1 from "../assets/banner1small.jpg";
-import banner2 from "../assets/banner2small.jpg";
-import banner3 from "../assets/banner3small.jpg";
-import banner4 from "../assets/banner4B.jpg";
-import banner5 from "../assets/banner5small.jpg";
-import banner6 from "../assets/banner6small.jpg";
-import banner7 from "../assets/banner7small.jpg";
-import banner8 from "../assets/banner8small.jpg";
-import banner9 from "../assets/banner9small.jpg";
+import banner1 from "../assets/lp6varieties.jpg";
+import banner2 from "../assets/lp5dock.jpg";
+import banner3 from "../assets/lp1dell.jpg";
+import banner4 from "../assets/lp7mcd.jpg";
+import banner5 from "../assets/lp3lend.jpg";
+import banner6 from "../assets/lp4acc.jpg";
+import banner7 from "../assets/lp2hp.jpg";
 
-export  const bannerImages = [
-    {
-      url: banner4,
-      theme: "dark",
-      text1: "Smell different",
-      text2: "Explore our rare niche perfume collection",
-    },
-    {
-      url: banner1,
-      theme: "light",
-      text1: "Sale up to 40% off",
-      text2: "Room sprays that refresh every corner",
-    },
-    {
-      url: banner2,
-      theme: "light",
-      text1: "Scents with a story",
-      text2: "Elegant perfumes crafted just for you",
-    },
-    {
-      url: banner3,
-      theme: "light",
-      text1: "Your calm, bottled",
-      text2: "Need a diffuser that chills *and* thrills?", // question
-    },
-    {
-      url: banner5,
-      theme: "light",
-      text1: "Drive in style",
-      text2: "Which scent fits your dashboard’s personality?", // question
-    },
-    {
-      url: banner6,
-      theme: "light",
-      text1: "Feel expensive, effortlessly",
-      text2: "Elegant perfumes for every mood",
-    },
-    {
-      url: banner7,
-      theme: "dark",
-      text1: "Bold on the go",
-      text2: "Ready to turn heads without a word?", // question
-    },
-    {
-      url: banner8,
-      theme: "light",
-      text1: "Ignite your senses",
-      text2: "Niche candles made to mesmerize",
-    },
-    {
-      url: banner9,
-      theme: "light",
-      text1: "Freshen up your space",
-      text2: "Want to spritz your stress away?", // question
-    },
-    {
-      url: banner3, // intentional duplicate
-      theme: "light",
-      text1: "Redefine your space",
-      text2: "Diffusers that speak luxury",
-    },
-  ];
-  
+
+export const bannerImages = [
+  {
+    url: banner1,
+    theme: "light",
+    text1: "Save up to 40% on Laptops",
+    text2: "Top picks from HP, Lenovo & more – while stocks last",
+  },
+  {
+    url: banner4,
+    theme: "dark",
+    text1: "Unleash Your Inner Creative",
+    text2: "MacBooks at great prices – elegance meets power",
+  },
+  {
+    url: banner2,
+    theme: "light",
+    text1: "One Plug to Rule Them All",
+    text2: "Dock smarter — connect everything with ease",
+  },
+  {
+    url: banner3,
+    theme: "dark",
+    text1: "Engineered to Excel",
+    text2: "Top Dell deals for professionals on the move",
+  },
+  {
+    url: banner5,
+    theme: "dark",
+    text1: "Tough. Smart. Lenovo.",
+    text2: "Unbeatable performance for students and creators",
+  },
+  {
+    url: banner6,
+    theme: "light",
+    text1: "Upgrade. Replace. Empower.",
+    text2: "Keyboards, batteries, chargers & more at hot deals",
+  },
+  {
+    url: banner7,
+    theme: "light",
+    text1: "Power Meets Reliability",
+    text2: "Explore sleek HP laptops built for work and play",
+  },
+];
