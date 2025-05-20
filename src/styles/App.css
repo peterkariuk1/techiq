@@ -2,9 +2,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap');
 
 :root{
-  --primary-color: #ab8e66;
+  --primary-color: #0d89a5;
   --secondary-color: #000000;
-  --tertiary-color: #fffcf0;
+  --tertiary-color: #ffffff;
+  
 }
 body{
   margin: 0;
