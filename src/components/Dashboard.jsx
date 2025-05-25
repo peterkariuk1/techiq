@@ -223,7 +223,7 @@ const Dashboard = ({ onNavigateToTab }) => {
       <div className="dashboard-header">
         <div className="dashboard-title">
           <h2>Dashboard Overview</h2>
-          <p className="subtitle">Welcome back to Loris Admin</p>
+          <p className="subtitle">Welcome back to Techiq Admin</p>
         </div>
         <div className="dashboard-date">
           <FiCalendar size={16} />

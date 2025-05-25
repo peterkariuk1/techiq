@@ -3,7 +3,7 @@
 .header {
   position: sticky;
   transition: 0.2s opacity 0.3s ease, 0.2s transform 0.3s ease;
-  padding: 4px 2px;
+  padding: 4px 20px;
   background-color: var(--tertiary-color);
 }
 

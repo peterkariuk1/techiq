@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "../styles/login.css";
-import logoImage from "../assets/lorislogo.png";
+import logoImage from "../assets/techiq-logo.png";
 import { Link, useNavigate } from 'react-router-dom';
 import { auth, db } from "../../firebase/firebaseConfig.js";
 import { createUserWithEmailAndPassword } from "firebase/auth";
@@ -102,11 +102,11 @@ const Register = () => {
       <div className="backdrop-filter-container"></div>
       <div className="inner-login-container">
         <div className="top">
-          <img src={logoImage} alt="Loris Perfume" />
+          <img src={logoImage} alt="Techiq Solutions" />
         </div>
         <div className="center">
           <h1>Get Started</h1>
-          <h2>Create Your Loris Perfume Account in Simple Steps!</h2>
+          <h2>Create Your Techiq Solutions Account in Simple Steps!</h2>
           
           {statusMessage && (
             <div className={`status-message ${statusType}`}>

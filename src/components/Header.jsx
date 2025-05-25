@@ -322,7 +322,7 @@ const Header = () => {
   return (
     <nav className={`header ${isVisible ? "visible" : "hidden"}`}>
       <Link to="/">
-        <img className="loris-logo" src={logoImage} alt="Loris Logo" />
+        <img className="loris-logo" src={logoImage} alt="Techiq Logo" />
       </Link>
 
       <div className="searchbox">
