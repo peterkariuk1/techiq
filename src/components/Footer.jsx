@@ -30,7 +30,7 @@ const Footer = () => {
       </div>
       <div className="centre">
         <div className="title">
-          <h3>Loris Kenya</h3>
+          <h3>Techiq Solutions</h3>
           <p>
             Curating timeless scents that speak louder than words, designed for
             everyone, every season, every story.
@@ -85,17 +85,17 @@ const Footer = () => {
             <img src={instagramIcon} />
           </Link>
           <Link
-            to="https://wa.me/254753380900"
+            to="https://wa.me/254799748449"
             target='_blank'
             style={{ textDecoration: "none", color: "#fffcf0" }}
           >
             <img src={whatsappIcon} />
           </Link>
-          <p>0753 380 900</p>
+          <p>0799 748 449</p>
           <p></p>
         </div>
       </div>
-      <p>Copyright © 2025 LorisKenya.</p>
+      <p>Copyright © 2025 Techiq Solutions.</p>
     </footer>
   );
 };

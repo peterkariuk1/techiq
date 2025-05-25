@@ -215,7 +215,7 @@ const MenPerfumes = () => {
   const getProductImage = (product) => {
     // Try different possible image field names
     const imageUrl =
-      product.image ||
+      product.images[0] ||
       product.image_url ||
       product.img ||
       product.thumbnail ||

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "../styles/login.css";
-import logoImage from "../assets/lorislogo.png";
+import logoImage from "../assets/techiq-logo.png";
 import { Link, Links, useNavigate } from "react-router-dom";
 import { auth } from "../../firebase/firebaseConfig.js";
 import { signInWithEmailAndPassword } from "firebase/auth";
@@ -62,11 +62,11 @@ const Login = () => {
       <div className="backdrop-filter-container"></div>
       <div className="inner-login-container">
         <div className="top">
-          <img src={logoImage} alt="Loris Perfume" />
+          <img src={logoImage} alt="Techiq Solutions" />
         </div>
         <div className="center">
           <h1>Welcome Back!</h1>
-          <p>Log back into your Loris Parfum account</p>
+          <p>Log back into your Techiq Solutions account</p>
           
           {statusMessage && (
             <div className={`status-message ${statusType}`}>

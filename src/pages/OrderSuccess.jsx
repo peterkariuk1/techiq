@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import "../styles/order-success.css";
-import logoImage from "../assets/lorislogo.png";
+import logoImage from "../assets/techiq-logo.png";
 import successIcon from "../assets/check-circle.png";
 import { db, auth } from "../../firebase/firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
@@ -114,7 +114,7 @@ const OrderSuccess = () => {
     <div className="order-success-page">
       <div className="success-header">
         <Link to="/">
-          <img src={logoImage} alt="Loris Kenya" className="logo" />
+          <img src={logoImage} alt="Techiq Solutions" className="logo" />
         </Link>
       </div>
 
@@ -188,14 +188,14 @@ const OrderSuccess = () => {
             <div className="contact-info">
               <p>Questions about your order? Contact us at:</p>
               <p>
-                <strong>Email:</strong> loriskenyaltd@gmail.com
+                <strong>Email:</strong>techiqsolutionslimited@gmail.com
               </p>
               <p>
-                <strong>Phone:</strong> +254 712 345 678
+                <strong>Phone:</strong>0799748449
               </p>
               {orderMethod === 'whatsapp' && (
                 <p>
-                  <strong>WhatsApp:</strong> +254 712 345 678
+                  <strong>WhatsApp:</strong>0799748449
                 </p>
               )}
             </div>

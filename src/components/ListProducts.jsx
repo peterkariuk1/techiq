@@ -168,8 +168,8 @@ function ListProducts() {
               {filteredProducts.map(product => (
                 <div key={product.id} className="product-card">
                   <div className="product-image">
-                    {product.image ? (
-                      <img src={product.image} alt={product.name} />
+                    {product.images ? (
+                      <img src={product.images[0]} alt={product.name} />
                     ) : (
                       <div className="no-image">No Image</div>
                     )}
@@ -202,8 +202,8 @@ function ListProducts() {
                     <tr key={product.id}>
                       <td className="product-cell">
                         <div className="product-image-small">
-                          {product.image ? (
-                            <img src={product.image} alt={product.name} />
+                          {product.images ? (
+                            <img src={product.images[0]} alt={product.name} />
                           ) : (
                             <div className="no-image-small">No Image</div>
                           )}

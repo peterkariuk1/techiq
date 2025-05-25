@@ -115,7 +115,7 @@ const Grid = () => {
     // Product details for sharing
     const title = capitalizeWords(product.name);
     const text = product.description || 
-      `Check out this ${product.category || ''} perfume from Loris Kenya!`;
+      `Check out this ${product.category || ''} perfume from Techiq Solutions!`;
     
     // Check if the Web Share API is available
     if (navigator.share) {
@@ -370,7 +370,7 @@ const Grid = () => {
   // Get product image with multiple possible field names
   const getProductImage = (product) => {
     // Try different possible image field names
-    const imageUrl = product.image;
+    const imageUrl = product.images[0];
 
     // Check if URL is valid
     if (imageUrl && typeof imageUrl === 'string' && imageUrl.trim() !== '') {

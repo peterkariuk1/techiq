@@ -27,22 +27,22 @@ const categories = [
 const Filters = () => {
   const scrollRef = useRef(null);
   const [searchParams, setSearchParams] = useSearchParams();
-  
+
   // Get initial filter values from URL or use defaults
   const [minPrice, setMinPrice] = useState(() => {
     const urlMinPrice = searchParams.get("min_price");
     return urlMinPrice ? parseInt(urlMinPrice) : 0;
   });
-  
+
   const [maxPrice, setMaxPrice] = useState(() => {
     const urlMaxPrice = searchParams.get("max_price");
     return urlMaxPrice ? parseInt(urlMaxPrice) : 30000;
   });
-  
+
   const [selectedCategory, setSelectedCategory] = useState(() => {
     return searchParams.get("category") || "";
   });
-  
+
   const [sortBy, setSortBy] = useState(() => {
     return searchParams.get("sort") || "newest";
   });
@@ -50,13 +50,13 @@ const Filters = () => {
   // Function to update URL parameters
   const updateUrlParams = () => {
     const params = {};
-    
+
     // Only add parameters that have values
     if (minPrice > 0) params.min_price = minPrice;
     if (maxPrice < 30000) params.max_price = maxPrice;
     if (selectedCategory) params.category = selectedCategory;
     if (sortBy !== "newest") params.sort = sortBy;
-    
+
     // Update URL without causing a page reload
     setSearchParams(params);
   };
@@ -67,22 +67,22 @@ const Filters = () => {
     const timer = setTimeout(() => {
       updateUrlParams();
     }, 500);
-    
+
     return () => clearTimeout(timer);
   }, [minPrice, maxPrice, selectedCategory, sortBy]);
 
   // Function to scroll left or right by fixed pixels
-  const scroll = (direction) => {
-    if (scrollRef.current) {
-      const { scrollLeft, clientWidth } = scrollRef.current;
-      const scrollAmount = direction === "left" ? -clientWidth : clientWidth;
-      scrollRef.current.scrollTo({
-        left: scrollLeft + scrollAmount,
-        behavior: "smooth",
-      });
-    }
-  };
-  
+  // const scroll = (direction) => {
+  //   if (scrollRef.current) {
+  //     const { scrollLeft, clientWidth } = scrollRef.current;
+  //     const scrollAmount = direction === "left" ? -clientWidth : clientWidth;
+  //     scrollRef.current.scrollTo({
+  //       left: scrollLeft + scrollAmount,
+  //       behavior: "smooth",
+  //     });
+  //   }
+  // };
+
   // Handle category selection
   const handleCategoryClick = (categoryName) => {
     setSelectedCategory(prev => prev === categoryName ? "" : categoryName);
@@ -100,13 +100,13 @@ const Filters = () => {
     <div className="filters-section">
       <div className="category-section">
         <h2 className="section-title">Browse Categories</h2>
-        <button className="nav-arrow left" onClick={() => scroll("left")}>
+        {/* <button className="nav-arrow left" onClick={() => scroll("left")}>
           {"<"}
-        </button>
+        </button> */}
         <div className="slider-wrapper">
           <div className="category-slider" ref={scrollRef}>
             {categories.map((cat) => (
-              <div 
+              <div
                 className={`category-card ${selectedCategory === cat.name ? 'selected' : ''}`}
                 key={cat.id}
                 onClick={() => handleCategoryClick(cat.name)}
@@ -117,23 +117,23 @@ const Filters = () => {
             ))}
           </div>
         </div>
-        <button className="nav-arrow right" onClick={() => scroll("right")}>
+        {/* <button className="nav-arrow right" onClick={() => scroll("right")}>
           {">"}
-        </button>
+        </button> */}
       </div>
       <div className="filter-price-container">
         <div className="price--container">
           Filter by Price
           <div className="max-min-price-inputs">
-            <input 
-              type="number" 
+            <input
+              type="number"
               value={minPrice}
               onChange={(e) => setMinPrice(Math.max(0, parseInt(e.target.value) || 0))}
               placeholder="Min"
             />
             -
-            <input 
-              type="number" 
+            <input
+              type="number"
               value={maxPrice}
               onChange={(e) => setMaxPrice(Math.max(minPrice, parseInt(e.target.value) || 0))}
               placeholder="Max"

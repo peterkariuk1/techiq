@@ -9,7 +9,7 @@ import {
   FiLogOut, FiChevronLeft, FiChevronRight,
   FiChevronDown, FiList, FiPlus, FiEdit, FiLoader
 } from "react-icons/fi";
-import logoImage from "../assets/lorislogo.png";
+import logoImage from "../assets/techiq-logo.png";
 import AdminOrders from "../components/AdminOrders";
 import UploadProducts from "../components/UploadProducts";
 import UpdateProducts from "../components/UpdateProducts";
@@ -180,9 +180,9 @@ const Admin = () => {
         <div className="sidebar-header">
           <div className="logo-container">
             <Link to="/">
-              <img src={logoImage} alt="Loris Kenya" className="sidebar-logo" />
+              <img src={logoImage} alt="Techiq Solutions" className="sidebar-logo" />
             </Link>
-            <h1 className="logo">Admin</h1>
+            <h1 className="logo">Techiq Admin</h1>
           </div>
 
           {/* Mobile close button */}

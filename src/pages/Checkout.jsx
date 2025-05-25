@@ -1,11 +1,19 @@
 import { useState, useEffect } from "react";
 import "../styles/checkout.css";
-import logoImage from "../assets/lorislogo.png";
+import logoImage from "../assets/techiq-logo.png";
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from "../context/CartContext";
 import { db, auth } from "../../firebase/firebaseConfig";
 import { setDoc, doc, getDoc } from "firebase/firestore";
 import emailjs from '@emailjs/browser';
+import { 
+  FiShoppingCart, FiUser, FiMail, FiPhone, 
+  FiMessageSquare, FiCheckCircle, FiTrash2, 
+  FiChevronLeft, FiChevronRight, FiArrowRight, 
+  FiShoppingBag, FiCreditCard
+} from "react-icons/fi";
+import { RiWhatsappLine } from "react-icons/ri";
+import { HiOutlineDeviceTablet, HiOutlineChip } from "react-icons/hi";
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -19,6 +27,8 @@ const Checkout = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const { cart: cartItems, updateQuantity, removeFromCart: removeItem, clearCart } = useCart();
   const [emailStatus, setEmailStatus] = useState(null);
+  const [checkoutStep, setCheckoutStep] = useState(1);
+  const [formErrors, setFormErrors] = useState({});
 
   const EMAILJS_SERVICE_ID = "service_dcl2ixr";
   const EMAILJS_TEMPLATE_ID = "template_n8yvs08";
@@ -26,21 +36,28 @@ const Checkout = () => {
 
   // Calculate the total without separate tax and shipping
   const total = cartItems.reduce((total, item) => total + (item.price ? item.price * item.quantity : item.selling_price * item.quantity), 0);
+  
+  const itemCount = cartItems.reduce((count, item) => count + item.quantity, 0);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Clear error for this field when user types
+    if (formErrors[name]) {
+      setFormErrors(prev => ({ ...prev, [name]: null }));
+    }
   };
 
   const getOrderId = () => {
-    return `LOR-${Date.now().toString().substring(7)}`;
+    return `TQ-${Date.now().toString().substring(7)}`;
   };
 
   const sendOrderConfirmationEmail = async (orderData) => {
     try {
       const formattedItems = orderData.items.map(item => ({
         name: item.name,
-        image_url: item.image || "https://placehold.co/64x64?text=No+Image",
+        image_url: getProductImage(item),
         units: item.quantity,
         price: item.price.toLocaleString()
       }));
@@ -56,8 +73,8 @@ const Checkout = () => {
         cost: formattedCosts,
         email: orderData.shippingAddress.email,
         to_name: orderData.shippingAddress.fullName,
-        reply_to: "loriskenyaltd@gmail.com",
-        logo_url: "https://f003.backblazeb2.com/file/loris-product-images/lorislogo.png",
+        reply_to: "techiqsolutionslimited@gmail.com",
+        logo_url: "https://f003.backblazeb2.com/file/Techiq/techiq-logo.png",
       };
 
       const response = await emailjs.send(
@@ -93,7 +110,8 @@ const Checkout = () => {
           price: item.price || item.selling_price,
           quantity: item.quantity,
           category: item.category || 'Uncategorized',
-          image: item.image || ''
+          image: item.image || '',
+          images: item.images || []
         })),
         total,
         status: "pending",
@@ -130,7 +148,7 @@ const Checkout = () => {
   };
 
   const handleWhatsAppOrder = (orderId) => {
-    let message = `Hello Loris Kenya, I would like to place an order (${orderId}):\n\n`;
+    let message = `Hello Techiq Solutions, I would like to place an order (${orderId}):\n\n`;
 
     message += `*Order Details*\n`;
     message += `------------------\n\n`;
@@ -139,10 +157,18 @@ const Checkout = () => {
       message += `${index + 1}) ${item.name} x${item.quantity} - KSh ${(item.price || item.selling_price) * item.quantity}\n`;
     });
 
+    message += `\n*Customer Details*\n`;
+    message += `Name: ${formData.fullName}\n`;
+    message += `Email: ${formData.email}\n`;
+    message += `Phone: ${formData.phone}\n`;
+    if (formData.deliveryNotes) {
+      message += `Notes: ${formData.deliveryNotes}\n`;
+    }
+    
     message += `\n*Order Summary*\n`;
     message += `Total: KSh ${total}\n\n`;
 
-    const whatsappNumber = "254753380900";
+    const whatsappNumber = "254799748449";
     const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
 
     const OpenWhatsApp = async () => {
@@ -153,9 +179,31 @@ const Checkout = () => {
     OpenWhatsApp();
   };
 
+  const validateForm = () => {
+    const errors = {};
+    
+    if (!formData.fullName.trim()) {
+      errors.fullName = "Full name is required";
+    }
+    
+    if (!formData.email.trim()) {
+      errors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.email = "Email format is invalid";
+    }
+    
+    if (!formData.phone.trim()) {
+      errors.phone = "Phone number is required";
+    } else if (!/^[0-9+\s()-]{9,15}$/.test(formData.phone)) {
+      errors.phone = "Phone number format is invalid";
+    }
+    
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleCheckout = () => {
-    if (!formData.fullName || !formData.email || !formData.phone) {
-      alert("Please fill in all required fields");
+    if (!validateForm()) {
       return;
     }
 
@@ -165,6 +213,27 @@ const Checkout = () => {
       handleWhatsAppOrder(orderId);
     } else {
       handleNormalOrder(orderId);
+    }
+  };
+
+  const nextStep = () => {
+    if (checkoutStep === 1) {
+      if (cartItems.length === 0) {
+        alert("Your cart is empty");
+        return;
+      }
+      setCheckoutStep(2);
+    } else if (checkoutStep === 2) {
+      if (!validateForm()) {
+        return;
+      }
+      setCheckoutStep(3);
+    }
+  };
+
+  const prevStep = () => {
+    if (checkoutStep > 1) {
+      setCheckoutStep(checkoutStep - 1);
     }
   };
 
@@ -195,169 +264,403 @@ const Checkout = () => {
     fetchUserData();
   }, []);
 
+  // Helper function to handle both image formats
+  const getProductImage = (product) => {
+    // Check if product has images array
+    if (product.images && Array.isArray(product.images) && product.images.length > 0) {
+      return product.images[0]; // Return the first image
+    }
+    
+    // Fallback to single image field if exists
+    if (product.image && typeof product.image === 'string' && product.image.trim() !== '') {
+      return product.image;
+    }
+
+    return "https://placehold.co/300x300?text=No+Image";
+  };
+
+  // Get icon for category
+  const getCategoryIcon = (category) => {
+    if (!category) return <HiOutlineDeviceTablet />;
+    
+    const lowerCategory = category.toLowerCase();
+    
+    if (lowerCategory.includes('laptop')) return <HiOutlineDeviceTablet />;
+    if (lowerCategory.includes('processor') || lowerCategory.includes('cpu')) return <HiOutlineChip />;
+    
+    return <HiOutlineDeviceTablet />;
+  };
+
   return (
-    <div className="checkout-page">
-      <div className="checkout-header">
-        <img src={logoImage} alt="Loris Perfume" />
-        <h1>Checkout</h1>
+    <div className="tech-checkout-page">
+      <div className="tech-checkout-header">
+        <Link to="/" className="tech-logo">
+          <img src={logoImage} alt="Techiq Solutions" />
+        </Link>
+        <div className="tech-checkout-steps">
+          <div className={`tech-step ${checkoutStep >= 1 ? 'active' : ''}`}>
+            <div className="tech-step-number">1</div>
+            <span className="tech-step-name">Cart</span>
+          </div>
+          <div className="tech-step-connector"></div>
+          <div className={`tech-step ${checkoutStep >= 2 ? 'active' : ''}`}>
+            <div className="tech-step-number">2</div>
+            <span className="tech-step-name">Information</span>
+          </div>
+          <div className="tech-step-connector"></div>
+          <div className={`tech-step ${checkoutStep >= 3 ? 'active' : ''}`}>
+            <div className="tech-step-number">3</div>
+            <span className="tech-step-name">Review</span>
+          </div>
+        </div>
+        <div className="tech-cart-count">
+          <FiShoppingCart />
+          <span>{itemCount}</span>
+        </div>
       </div>
 
-      <div className="checkout-container">
-        <div className="cart-section">
-          <h2>Your Cart ({cartItems.length} items)</h2>
+      <div className="tech-checkout-container">
+        <div className="tech-checkout-main">
+          {/* Step 1: Cart */}
+          {checkoutStep === 1 && (
+            <div className="tech-cart-section">
+              <div className="tech-section-header">
+                <h2><FiShoppingCart /> Your Tech Cart</h2>
+                <div className="tech-item-count">{itemCount} {itemCount === 1 ? 'item' : 'items'}</div>
+              </div>
 
-          {cartItems.length === 0 ? (
-            <div className="empty-cart">
-              <p>Your cart is empty</p>
-              <Link to="/">Continue Shopping</Link>
-            </div>
-          ) : (
-            <div className="cart-items">
-              {cartItems.map(item => (
-                <div className="cart-item" key={item.id}>
-                  <div className="cart-item-image">
-                    <img
-                      src={item.image || "https://placehold.co/300x300?text=No+Image"}
-                      alt={item.name}
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = "https://placehold.co/300x300?text=No+Image";
-                      }}
-                    />
+              {cartItems.length === 0 ? (
+                <div className="tech-empty-cart">
+                  <div className="tech-empty-icon">
+                    <FiShoppingBag />
                   </div>
-                  <div className="cart-item-details">
-                    <h3>{item.name}</h3>
-                    <p className="item-category">{item.category || 'Uncategorized'}</p>
-                    <p className="item-price">KSh {(item.price || item.selling_price).toLocaleString()}</p>
-                    <div className="quantity-controls">
-                      <button
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        disabled={item.quantity <= 1}
-                      >
-                        -
-                      </button>
-                      <span>{item.quantity}</span>
-                      <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>
-                        +
-                      </button>
-                    </div>
-                  </div>
-                  <div className="cart-item-subtotal">
-                    <p>KSh {((item.price || item.selling_price) * item.quantity).toLocaleString()}</p>
-                    <button
-                      className="remove-item"
-                      onClick={() => removeItem(item.id)}
-                    >
-                      Remove
-                    </button>
-                  </div>
+                  <p>Your cart is empty</p>
+                  <Link to="/all-products" className="tech-continue-shopping">Browse Products</Link>
                 </div>
-              ))}
+              ) : (
+                <div className="tech-cart-items">
+                  {cartItems.map(item => (
+                    <div className="tech-cart-item" key={item.id}>
+                      <div className="tech-cart-item-image">
+                        <img
+                          src={getProductImage(item)}
+                          alt={item.name}
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "https://placehold.co/300x300?text=No+Image";
+                          }}
+                        />
+                      </div>
+                      <div className="tech-cart-item-details">
+                        <h3>{item.name}</h3>
+                        <div className="tech-item-category">
+                          {getCategoryIcon(item.category)}
+                          <span>{item.category || 'Computer Hardware'}</span>
+                        </div>
+                        <div className="tech-item-price-row">
+                          <div className="tech-item-price">KSh {(item.price || item.selling_price).toLocaleString()}</div>
+                          <div className="tech-quantity-controls">
+                            <button
+                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                              disabled={item.quantity <= 1}
+                              aria-label="Decrease quantity"
+                            >
+                              -
+                            </button>
+                            <span>{item.quantity}</span>
+                            <button 
+                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                              aria-label="Increase quantity"
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="tech-cart-item-subtotal">
+                        <div className="tech-subtotal-value">
+                          KSh {((item.price || item.selling_price) * item.quantity).toLocaleString()}
+                        </div>
+                        <button
+                          className="tech-remove-item"
+                          onClick={() => removeItem(item.id)}
+                          aria-label="Remove item"
+                        >
+                          <FiTrash2 />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
-        </div>
 
-        <div className="checkout-section">
-          <div className="order-summary">
-            <h2>Order Summary</h2>
-            {/* Remove tax and shipping rows, keep only the total */}
-            <div className="summary-row total">
-              <span>Total</span>
-              <span>KSh {total.toLocaleString()}</span>
-            </div>
-            <p className="included-info">Prices are inclusive of taxes</p>
-          </div>
+          {/* Step 2: Information */}
+          {checkoutStep === 2 && (
+            <div className="tech-info-section">
+              <div className="tech-section-header">
+                <h2><FiUser /> Contact Information</h2>
+              </div>
 
-          <div className="shipping-info">
-            <h2>Contact Information</h2>
-            <div className="form-row">
-              <input
-                type="text"
-                name="fullName"
-                placeholder="Full Name"
-                value={formData.fullName}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="form-row">
-              <input
-                type="email"
-                name="email"
-                placeholder="Email Address"
-                value={formData.email}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="form-row">
-              <input
-                type="tel"
-                name="phone"
-                placeholder="Phone Number"
-                value={formData.phone}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="form-row">
-              <textarea
-                name="deliveryNotes"
-                placeholder="Any Special Instructions (Optional)"
-                value={formData.deliveryNotes}
-                onChange={handleInputChange}
-              ></textarea>
-            </div>
-          </div>
+              <div className="tech-form">
+                <div className="tech-form-group">
+                  <label htmlFor="fullName">
+                    <FiUser className="tech-input-icon" />
+                    Full Name
+                  </label>
+                  <input
+                    id="fullName"
+                    type="text"
+                    name="fullName"
+                    placeholder="Enter your full name"
+                    value={formData.fullName}
+                    onChange={handleInputChange}
+                    className={formErrors.fullName ? 'tech-input-error' : ''}
+                  />
+                  {formErrors.fullName && (
+                    <div className="tech-error-message">{formErrors.fullName}</div>
+                  )}
+                </div>
 
-          <div className="order-method">
-            <h2>How would you like to place your order?</h2>
-            <div className="order-options">
-              <div
-                className={`order-option ${orderMethod === 'normal' ? 'selected' : ''}`}
-                onClick={() => setOrderMethod('normal')}
+                <div className="tech-form-group">
+                  <label htmlFor="email">
+                    <FiMail className="tech-input-icon" />
+                    Email Address
+                  </label>
+                  <input
+                    id="email"
+                    type="email"
+                    name="email"
+                    placeholder="Enter your email address"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className={formErrors.email ? 'tech-input-error' : ''}
+                  />
+                  {formErrors.email && (
+                    <div className="tech-error-message">{formErrors.email}</div>
+                  )}
+                </div>
+
+                <div className="tech-form-group">
+                  <label htmlFor="phone">
+                    <FiPhone className="tech-input-icon" />
+                    Phone Number
+                  </label>
+                  <input
+                    id="phone"
+                    type="tel"
+                    name="phone"
+                    placeholder="Enter your phone number"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    className={formErrors.phone ? 'tech-input-error' : ''}
+                  />
+                  {formErrors.phone && (
+                    <div className="tech-error-message">{formErrors.phone}</div>
+                  )}
+                </div>
+
+                <div className="tech-form-group">
+                  <label htmlFor="deliveryNotes">
+                    <FiMessageSquare className="tech-input-icon" />
+                    Special Instructions (Optional)
+                  </label>
+                  <textarea
+                    id="deliveryNotes"
+                    name="deliveryNotes"
+                    placeholder="Any special instructions or delivery notes"
+                    value={formData.deliveryNotes}
+                    onChange={handleInputChange}
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Step 3: Review */}
+          {checkoutStep === 3 && (
+            <div className="tech-review-section">
+              <div className="tech-section-header">
+                <h2><FiCheckCircle /> Review Your Order</h2>
+              </div>
+
+              <div className="tech-review-container">
+                <div className="tech-review-info">
+                  <h3>Contact Information</h3>
+                  <div className="tech-info-row">
+                    <span className="tech-info-label"><FiUser /> Name:</span>
+                    <span className="tech-info-value">{formData.fullName}</span>
+                  </div>
+                  <div className="tech-info-row">
+                    <span className="tech-info-label"><FiMail /> Email:</span>
+                    <span className="tech-info-value">{formData.email}</span>
+                  </div>
+                  <div className="tech-info-row">
+                    <span className="tech-info-label"><FiPhone /> Phone:</span>
+                    <span className="tech-info-value">{formData.phone}</span>
+                  </div>
+                  {formData.deliveryNotes && (
+                    <div className="tech-info-row">
+                      <span className="tech-info-label"><FiMessageSquare /> Notes:</span>
+                      <span className="tech-info-value">{formData.deliveryNotes}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="tech-review-items">
+                  <h3>Order Items</h3>
+                  <div className="tech-review-items-list">
+                    {cartItems.map(item => (
+                      <div className="tech-review-item" key={item.id}>
+                        <div className="tech-review-item-image">
+                          <img src={getProductImage(item)} alt={item.name} />
+                        </div>
+                        <div className="tech-review-item-details">
+                          <h4>{item.name}</h4>
+                          <div className="tech-review-item-meta">
+                            <span>Qty: {item.quantity}</span>
+                            <span>×</span>
+                            <span>KSh {(item.price || item.selling_price).toLocaleString()}</span>
+                          </div>
+                        </div>
+                        <div className="tech-review-item-price">
+                          KSh {((item.price || item.selling_price) * item.quantity).toLocaleString()}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="tech-order-method">
+                  <h3>Order Method</h3>
+                  <div className="tech-order-options">
+                    <div
+                      className={`tech-order-option ${orderMethod === 'normal' ? 'selected' : ''}`}
+                      onClick={() => setOrderMethod('normal')}
+                    >
+                      <div className="tech-option-icon">
+                        <FiCreditCard />
+                      </div>
+                      <div className="tech-option-content">
+                        <div className="tech-option-title">Standard Order</div>
+                        <div className="tech-option-desc">Place your order through our website</div>
+                      </div>
+                      <div className="tech-option-check">
+                        {orderMethod === 'normal' && <FiCheckCircle />}
+                      </div>
+                    </div>
+
+                    <div
+                      className={`tech-order-option ${orderMethod === 'whatsapp' ? 'selected' : ''}`}
+                      onClick={() => setOrderMethod('whatsapp')}
+                    >
+                      <div className="tech-option-icon whatsapp">
+                        <RiWhatsappLine />
+                      </div>
+                      <div className="tech-option-content">
+                        <div className="tech-option-title">WhatsApp Order</div>
+                        <div className="tech-option-desc">Place your order via WhatsApp for direct communication</div>
+                      </div>
+                      <div className="tech-option-check">
+                        {orderMethod === 'whatsapp' && <FiCheckCircle />}
+                      </div>
+                    </div>
+                  </div>
+
+                  {orderMethod === 'whatsapp' && (
+                    <div className="tech-whatsapp-info">
+                      <p>
+                        Your order details will be sent via WhatsApp for direct communication with our team.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="tech-navigation-buttons">
+            {checkoutStep > 1 && (
+              <button className="tech-back-button" onClick={prevStep}>
+                <FiChevronLeft /> Back
+              </button>
+            )}
+            
+            {checkoutStep < 3 ? (
+              <button className="tech-next-button" onClick={nextStep} disabled={cartItems.length === 0 && checkoutStep === 1}>
+                Continue <FiChevronRight />
+              </button>
+            ) : (
+              <button 
+                className="tech-submit-button" 
+                onClick={handleCheckout}
+                disabled={isProcessing}
               >
-                <div className="option-radio">
-                  {orderMethod === 'normal' && <div className="radio-inner"></div>}
-                </div>
-                <div className="option-label">
-                  <span>Standard Order</span>
-                  <small>Place your order through our website directly</small>
-                </div>
-              </div>
-
-              <div
-                className={`order-option ${orderMethod === 'whatsapp' ? 'selected' : ''}`}
-                onClick={() => setOrderMethod('whatsapp')}
-              >
-                <div className="option-radio">
-                  {orderMethod === 'whatsapp' && <div className="radio-inner"></div>}
-                </div>
-                <div className="option-label">
-                  <span>WhatsApp Order</span>
-                  <small>Place your order via WhatsApp for direct communication</small>
-                </div>
-              </div>
-            </div>
-
-            {orderMethod === 'whatsapp' && (
-              <div className="whatsapp-info">
-                <p className="order-instructions">
-                  When you click "Place Order", we'll open WhatsApp with your order details pre-filled.
-                  You can add any additional comments before sending.
-                </p>
-              </div>
+                {isProcessing ? (
+                  <>Processing...</>
+                ) : orderMethod === 'whatsapp' ? (
+                  <>Order via WhatsApp <RiWhatsappLine /></>
+                ) : (
+                  <>Complete Order <FiArrowRight /></>
+                )}
+              </button>
             )}
           </div>
+        </div>
 
-          <button
-            className="checkout-button"
-            onClick={handleCheckout}
-            disabled={isProcessing}
-          >
-            {isProcessing ? "Processing..." : orderMethod === 'whatsapp' ? "Order via WhatsApp" : "Place Order"}
-          </button>
-
-          <p className="back-to-shopping">
-            <Link to="/products">Continue Shopping</Link>
-          </p>
+        <div className="tech-checkout-sidebar">
+          <div className="tech-summary-card">
+            <h3>Order Summary</h3>
+            
+            <div className="tech-summary-items">
+              <div className="tech-summary-item-count">
+                {itemCount} {itemCount === 1 ? 'item' : 'items'}
+              </div>
+              
+              <div className="tech-summary-item-list">
+                {cartItems.map(item => (
+                  <div className="tech-summary-item" key={item.id}>
+                    <div className="tech-summary-item-image">
+                      <img src={getProductImage(item)} alt={item.name} />
+                      <span className="tech-summary-item-quantity">{item.quantity}</span>
+                    </div>
+                    <div className="tech-summary-item-name">{item.name.length > 25 ? `${item.name.substring(0, 25)}...` : item.name}</div>
+                    <div className="tech-summary-item-price">
+                      KSh {((item.price || item.selling_price) * item.quantity).toLocaleString()}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <div className="tech-summary-total">
+              <div className="tech-total-row">
+                <span>Total</span>
+                <span>KSh {total.toLocaleString()}</span>
+              </div>
+              <div className="tech-tax-note">Prices are inclusive of all taxes</div>
+            </div>
+            
+            <div className="tech-security-info">
+              <div className="tech-security-icon">
+                <svg viewBox="0 0 24 24" width="18" height="18">
+                  <path fill="currentColor" d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z M12,7C13.4,7 14.8,8.1 14.8,9.5V11C15.4,11 16,11.6 16,12.3V15.8C16,16.4 15.4,17 14.7,17H9.2C8.6,17 8,16.4 8,15.7V12.2C8,11.6 8.6,11 9.2,11V9.5C9.2,8.1 10.6,7 12,7M12,8.2C11.2,8.2 10.5,8.7 10.5,9.5V11H13.5V9.5C13.5,8.7 12.8,8.2 12,8.2Z" />
+                </svg>
+              </div>
+              <div className="tech-security-text">
+                Secure checkout with end-to-end encryption
+              </div>
+            </div>
+          </div>
+          
+          <div className="tech-help-section">
+            <h4>Need Help?</h4>
+            <p>Our tech support team is available to assist you with your order.</p>
+            <a href="tel:254799748449" className="tech-support-link">
+              <FiPhone /> Call Support
+            </a>
+          </div>
         </div>
       </div>
     </div>
