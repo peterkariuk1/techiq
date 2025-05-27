@@ -11,7 +11,7 @@ const Loader = () => {
         onCanPlayThrough={(e) => e.target.play()}
         playsInline
       ></video>
-      <p className="preloader-tagline">Luxury scents, redefined</p>{" "}
+      <p className="preloader-tagline">Impeccable Quality</p>{" "}
     </div>
   );
 };
