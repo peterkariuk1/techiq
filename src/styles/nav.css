@@ -3,7 +3,7 @@
 .header {
   position: sticky;
   transition: 0.2s opacity 0.3s ease, 0.2s transform 0.3s ease;
-  padding: 4px 20px;
+  padding: 12px 20px;
   background-color: var(--tertiary-color);
 }
 
@@ -17,32 +17,33 @@
   opacity: 1;
   transform: translateY(0);
 }
-.loris-logo {
-  width: 70px;
-  /* min-width: 45%; */
-  height: 70px;
-  flex: 1;
-}
+
 nav {
   display: flex;
-  justify-content: space-around;
-  flex-wrap: wrap;
-  row-gap: 1px;
-  column-gap: 5rem;
+  flex-direction: column;
+  row-gap: 5px;
   padding: 0px 80px 0px 20px;
   /* position: fixed; */
   left: 0px;
   right: 0px;
   top: 0px;
   z-index: 22;
-  height: 70px;
+  height: 78px;
   /* background-color: var(--secondary-color); */
+}
+.nav-top {
+  display: flex;
+  justify-content: space-between;
 }
 .searchbox {
   display: flex;
   align-items: center;
-  /* width: 100%; */
-  flex: 4;
+  width: 100%;
+}
+nav .right {
+  display: flex;
+  align-items: center;
+  gap: 30px;
 }
 .search-button-container {
   background-color: var(--tertiary-color);
@@ -120,13 +121,7 @@ nav {
   outline: none;
   box-shadow: 1px 2px 5px #f5d7ac67;
 }
-nav .right {
-  display: flex;
-  flex: 1;
-  /* min-width: 45%; */
-  align-items: center;
-  gap: 30px;
-}
+
 nav .right div:hover {
   cursor: pointer;
   transform: scale(1.04);
@@ -347,7 +342,17 @@ nav .right div img {
   color: #ef4444;
 }
 
-@media (max-width: 870px) {
+@media (max-width: 475px) {
+  nav .right div img {
+    width: 25px;
+    height: 25px;
+  }
+  nav .right {
+    gap: 20px;
+  }
+}
+
+/* @media (max-width: 870px) {
   nav {
     flex-wrap: wrap;
     align-items: center;
@@ -396,11 +401,7 @@ nav .right div img {
     height: 50px;
   }
 }
-@media (max-width: 475px) {
-  nav {
-    column-gap: 48vw;
-  }
-}
+
 @media (max-width: 439px) {
   nav {
     column-gap: 45vw;
@@ -417,4 +418,4 @@ nav .right div img {
   nav .right{
     gap: 15px;
   }
-}
+} */

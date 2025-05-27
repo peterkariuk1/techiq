@@ -1,27 +1,25 @@
 import "../styles/filters.css";
 import React, { useRef, useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import diffuserImage from "../assets/lorisdiffusers.jpg";
-import frequencesImage from "../assets/lorisfrequence.png";
-import nicheImage from "../assets/lorisniche.jpeg";
-import bodyCareImage from "../assets/lorisbodycare.webp";
-import perfumeImage from "../assets/lorisperfume.jpg";
-import cologneImage from "../assets/loriscologne.jpg";
-import autoPerfumeImage from "../assets/lorisaautoperfume.jpg";
-import ladiesImage from "../assets/womanperfume.jpeg";
-import menImage from "../assets/manperfume.jpeg";
+import gamingImage from "../assets/gamecat.jpg";
+import lenovoImage from "../assets/lenovocat.jpg";
+import monitorImage from "../assets/monitorcat.jpg";
+import macbookImage from "../assets/macat.jpg";
+import dellImage from "../assets/dellcat.jpg";
+import desktopImage from "../assets/deskcat.jpg";
+import hpImage from "../assets/hpcat.jpg";
+import accessoriesImage from "../assets/acccat.jpg";
 
 // Sample categories
 const categories = [
-  { id: 1, name: "Women", image: ladiesImage },
-  { id: 2, name: "Men", image: menImage },
-  { id: 3, name: "Diffusers", image: diffuserImage },
-  { id: 4, name: "Frequence", image: frequencesImage },
-  { id: 5, name: "Niche", image: nicheImage },
-  { id: 6, name: "Body Care", image: bodyCareImage },
-  { id: 7, name: "Auto Perfumes", image: autoPerfumeImage },
-  { id: 8, name: "Loris Perfumes", image: perfumeImage },
-  { id: 9, name: "Cologne", image: cologneImage },
+  { id: 1, name: "HP Laptops", image: hpImage },
+  { id: 2, name: "Gaming Laptops", image: gamingImage },
+  { id: 5, name: "Monitors", image: monitorImage },
+  { id: 3, name: "Laptop Accessories", image: accessoriesImage },
+  { id: 4, name: "Lenovo Laptops", image: lenovoImage },
+  { id: 6, name: "Macbooks", image: macbookImage },
+  { id: 7, name: "Desktops", image: desktopImage },
+  { id: 8, name: "Dell Laptops", image: dellImage },
 ];
 
 const Filters = () => {

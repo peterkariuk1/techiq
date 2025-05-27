@@ -1,6 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import logoImage from "../assets/techiq-logo.png";
+import { TbDeviceLaptop } from "react-icons/tb";
+
 import searchIcon from "../assets/search2.png";
 import cartIcon from "../assets/cart2.png";
 import loveIcon from "../assets/love2.png";
@@ -321,9 +323,74 @@ const Header = () => {
 
   return (
     <nav className={`header ${isVisible ? "visible" : "hidden"}`}>
-      <Link to="/">
-        <img className="loris-logo" src={logoImage} alt="Techiq Logo" />
-      </Link>
+      <div className="nav-top">
+        <div className="techpd-container">
+          <Link to="/" className="techpd-logo">
+            <TbDeviceLaptop /> TechIQ
+          </Link>
+        </div>
+
+        <div className="right">
+          <Link to="/checkout">
+            <div className="cart-container">
+              <img src={cartIcon} alt="Cart" />
+              {cartItemCount > 0 && (
+                <div className="cart-counter-container">
+                  <p>{cartItemCount}</p>
+                </div>
+              )}
+            </div>
+          </Link>
+          
+
+          <div className="nav-profile-container" ref={profileDropdownRef}>
+            <div
+              className="profile-icon-wrapper"
+              onClick={() =>
+                isAuthenticated
+                  ? setShowProfileMenu(!showProfileMenu)
+                  : navigate("/login")
+              }
+            >
+              <img src={profileIcon} alt="Profile" />
+              {isAuthenticated && <span className="auth-indicator" />}
+            </div>
+
+            {isAuthenticated && showProfileMenu && (
+              <div className="profile-dropdown">
+                <div className="user-info">
+                  <span className="user-email">{currentUser.email}</span>
+                </div>
+
+                <div className="dropdown-divider"></div>
+
+                <div className="dropdown-menu">
+                  <Link to="/profile" className="dropdown-item">
+                    <FiUser /> My Account
+                  </Link>
+
+                  <Link to="/orders" className="dropdown-item">
+                    <FiShoppingBag /> My Orders
+                  </Link>
+
+                  {isAdmin && (
+                    <Link to="/admin" className="dropdown-item admin-link">
+                      <FiSettings /> Admin Dashboard
+                    </Link>
+                  )}
+
+                  <button
+                    onClick={handleLogout}
+                    className="dropdown-item logout-btn"
+                  >
+                    <FiLogOut /> Logout
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
 
       <div className="searchbox">
         <input
@@ -401,74 +468,6 @@ const Header = () => {
             )}
           </div>
         )}
-      </div>
-
-      <div className="right">
-        <Link to="/checkout">
-          <div className="cart-container">
-            <img src={cartIcon} alt="Cart" />
-            {cartItemCount > 0 && (
-              <div className="cart-counter-container">
-                <p>{cartItemCount}</p>
-              </div>
-            )}
-          </div>
-        </Link>
-        <div className="cart-container">
-          <img src={loveIcon} alt="love" />
-          {cartItemCount > 0 && (
-            <div className="cart-counter-container">
-              <p>3</p>
-            </div>
-          )}
-        </div>
-
-        <div className="nav-profile-container" ref={profileDropdownRef}>
-          <div
-            className="profile-icon-wrapper"
-            onClick={() =>
-              isAuthenticated
-                ? setShowProfileMenu(!showProfileMenu)
-                : navigate("/login")
-            }
-          >
-            <img src={profileIcon} alt="Profile" />
-            {isAuthenticated && <span className="auth-indicator" />}
-          </div>
-
-          {isAuthenticated && showProfileMenu && (
-            <div className="profile-dropdown">
-              <div className="user-info">
-                <span className="user-email">{currentUser.email}</span>
-              </div>
-
-              <div className="dropdown-divider"></div>
-
-              <div className="dropdown-menu">
-                <Link to="/profile" className="dropdown-item">
-                  <FiUser /> My Account
-                </Link>
-
-                <Link to="/orders" className="dropdown-item">
-                  <FiShoppingBag /> My Orders
-                </Link>
-
-                {isAdmin && (
-                  <Link to="/admin" className="dropdown-item admin-link">
-                    <FiSettings /> Admin Dashboard
-                  </Link>
-                )}
-
-                <button
-                  onClick={handleLogout}
-                  className="dropdown-item logout-btn"
-                >
-                  <FiLogOut /> Logout
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
       </div>
     </nav>
   );

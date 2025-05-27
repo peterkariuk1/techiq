@@ -12,7 +12,7 @@ body{
   font-family: 'Source Sans 3', 'sans serif';
 }
 .view-all-button {
-  border: 1px solid #ab8e66;
+  border: 1px solid #0d89a5;
   padding: 9px 13px;
   background-color: var(--secondary-color);
   color: var(--tertiary-color);

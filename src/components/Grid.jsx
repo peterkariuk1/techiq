@@ -3,12 +3,11 @@ import { useState, useEffect } from "react";
 import categoryIcon from "../assets/category-icon.png";
 import shareIcon from "../assets/share-icon.png";
 import addToCartIcon from "../assets/bag-icon.png";
-import seeMoreIcon from "../assets/see-more.png";
 import { db } from "../../firebase/firebaseConfig.js";
 import { collection, getDocs, query, limit, orderBy } from "firebase/firestore";
 import { useCart } from "../context/CartContext";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { FiArrowLeft } from 'react-icons/fi';
+import { FiArrowLeft } from "react-icons/fi";
 
 const Grid = () => {
   const [products, setProducts] = useState([]);
@@ -25,8 +24,8 @@ const Grid = () => {
   // Notification state
   const [notification, setNotification] = useState({
     visible: false,
-    message: '',
-    product: null
+    message: "",
+    product: null,
   });
 
   const { addToCart } = useCart();
@@ -38,28 +37,32 @@ const Grid = () => {
   const navigate = useNavigate();
 
   // Get filter values from URL
-  const minPrice = searchParams.get("min_price") ? parseInt(searchParams.get("min_price")) : 0;
-  const maxPrice = searchParams.get("max_price") ? parseInt(searchParams.get("max_price")) : Infinity;
+  const minPrice = searchParams.get("min_price")
+    ? parseInt(searchParams.get("min_price"))
+    : 0;
+  const maxPrice = searchParams.get("max_price")
+    ? parseInt(searchParams.get("max_price"))
+    : Infinity;
   const category = searchParams.get("category") || "";
   const sortBy = searchParams.get("sort") || "newest";
   const searchQuery = searchParams.get("search") || "";
 
   // Add handleBack function
   const handleBack = () => {
-    navigate('/');
+    navigate("/");
   };
 
   // Function to show notification
   const showNotification = (product, qty = 1) => {
     setNotification({
       visible: true,
-      message: `Added ${qty} ${qty > 1 ? 'items' : 'item'} to cart`,
-      product: product
+      message: `Added ${qty} ${qty > 1 ? "items" : "item"} to cart`,
+      product: product,
     });
 
     // Hide notification after 3 seconds
     setTimeout(() => {
-      setNotification(prev => ({ ...prev, visible: false }));
+      setNotification((prev) => ({ ...prev, visible: false }));
     }, 3000);
   };
 
@@ -69,7 +72,7 @@ const Grid = () => {
     setQuantity(1); // Reset quantity when opening a new product
     setIsModalOpen(true);
     // Prevent scrolling on body when modal is open
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
   };
 
   // Function to close modal
@@ -77,7 +80,7 @@ const Grid = () => {
     setIsModalOpen(false);
     setSelectedProduct(null);
     // Re-enable scrolling
-    document.body.style.overflow = 'auto';
+    document.body.style.overflow = "auto";
   };
 
   // Handle quantity change
@@ -110,13 +113,18 @@ const Grid = () => {
   // Share product function
   const handleShare = async (product) => {
     // Construct a shareable URL with the new format
-    const productUrl = `${window.location.origin}/product/?category=${encodeURIComponent(product.category || "Uncategorized")}&pid=${product.id}`;
-    
+    const productUrl = `${
+      window.location.origin
+    }/product/?category=${encodeURIComponent(
+      product.category || "Uncategorized"
+    )}&pid=${product.id}`;
+
     // Product details for sharing
     const title = capitalizeWords(product.name);
-    const text = product.description || 
-      `Check out this ${product.category || ''} perfume from Techiq Solutions!`;
-    
+    const text =
+      product.description ||
+      `Check out this ${product.category || ""} perfume from Techiq Solutions!`;
+
     // Check if the Web Share API is available
     if (navigator.share) {
       try {
@@ -125,41 +133,39 @@ const Grid = () => {
           text: text,
           url: productUrl,
         });
-        
+
         // Show a success notification
         setNotification({
           visible: true,
-          message: 'Product shared successfully!',
-          product: product
+          message: "Product shared successfully!",
+          product: product,
         });
-        
+
         setTimeout(() => {
-          setNotification(prev => ({ ...prev, visible: false }));
+          setNotification((prev) => ({ ...prev, visible: false }));
         }, 3000);
-        
       } catch (error) {
         // User cancelled or share failed
-        console.error('Share failed:', error);
+        console.error("Share failed:", error);
       }
     } else {
       // Fallback for browsers that don't support the Web Share API
       // Copy the product URL to clipboard
       try {
         await navigator.clipboard.writeText(productUrl);
-        
+
         setNotification({
           visible: true,
-          message: 'Link copied to clipboard!',
-          product: product
+          message: "Link copied to clipboard!",
+          product: product,
         });
-        
+
         setTimeout(() => {
-          setNotification(prev => ({ ...prev, visible: false }));
+          setNotification((prev) => ({ ...prev, visible: false }));
         }, 3000);
-        
       } catch (error) {
-        console.error('Clipboard copy failed:', error);
-        
+        console.error("Clipboard copy failed:", error);
+
         // Ultimate fallback: show the link in an alert
         alert(`Share this link: ${productUrl}`);
       }
@@ -175,51 +181,53 @@ const Grid = () => {
 
         // Reference to the products collection
         const productsRef = collection(db, "products");
-        
+
         // First check if there are any products at all (for debugging)
         const testSnapshot = await getDocs(productsRef);
-        console.log(`Total products in collection: ${testSnapshot.docs.length}`);
-        
+        console.log(
+          `Total products in collection: ${testSnapshot.docs.length}`
+        );
+
         if (testSnapshot.docs.length === 0) {
           console.log("Collection is empty - no products found");
           setProducts([]);
           setLoading(false);
           return;
         }
-        
+
         // Check if inStock field exists and is causing filtering issues
         let sampleDoc = testSnapshot.docs[0].data();
         console.log("Sample document fields:", Object.keys(sampleDoc));
         console.log("Sample inStock value:", sampleDoc.inStock);
-        
+
         // Create query - temporarily remove the inStock filter if it's causing issues
         let productsQuery;
 
         // Choose sort order based on URL parameter
-        switch(sortBy) {
+        switch (sortBy) {
           case "price-high-to-low":
             productsQuery = query(
-              productsRef, 
+              productsRef,
               // Only add inStock filter if needed
               // where("inStock", "==", true),
-              orderBy("price", "desc"), 
+              orderBy("price", "desc"),
               limit(1000)
             );
             break;
           case "price-low-to-high":
             productsQuery = query(
-              productsRef, 
+              productsRef,
               // where("inStock", "==", true),
-              orderBy("price", "asc"), 
+              orderBy("price", "asc"),
               limit(1000)
             );
             break;
           case "newest":
           default:
             productsQuery = query(
-              productsRef, 
+              productsRef,
               // where("inStock", "==", true),
-              orderBy("createdAt", "desc"), 
+              orderBy("createdAt", "desc"),
               limit(1000)
             );
             break;
@@ -229,23 +237,25 @@ const Grid = () => {
         const querySnapshot = await getDocs(productsQuery);
 
         // Process products data
-        const productsData = querySnapshot.docs.map(doc => ({
+        const productsData = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
           // Set default values for critical fields if missing
           price: doc.data().price || 0,
           inStock: doc.data().inStock !== false, // Default to true if not explicitly false
           name: doc.data().name || "Unnamed Product",
-          category: doc.data().category || "Uncategorized"
+          category: doc.data().category || "Uncategorized",
         }));
 
-        console.log(`Fetched ${productsData.length} products from products collection`);
-        
+        console.log(
+          `Fetched ${productsData.length} products from products collection`
+        );
+
         // Log first product for debugging
         if (productsData.length > 0) {
           console.log("Sample product data:", productsData[0]);
         }
-        
+
         setProducts(productsData);
         setLoading(false);
       } catch (error) {
@@ -258,65 +268,68 @@ const Grid = () => {
   }, [sortBy]); // Re-fetch when sort order changes
 
   // Filter products based on URL parameters
-  const filteredProducts = products.filter(product => {
+  const filteredProducts = products.filter((product) => {
     const productPrice = product.price || 0;
-    
+
     // Price filter
     if (productPrice < minPrice || productPrice > maxPrice) {
       return false;
     }
-    
+
     // Handle both category and gender filtering
     if (category) {
       // Special handling for Men/Women categories which should filter by gender
       if (category === "Men Perfume" || category === "Men") {
         return product.gender === "men";
       }
-      
+
       if (category === "Ladies Perfume" || category === "Women") {
         return product.gender === "women";
       }
-      
+
       // For other categories, filter by category field
       if (product.category) {
         // Try exact match (case insensitive)
         if (product.category.toLowerCase() === category.toLowerCase()) {
           return true;
         }
-        
+
         // Try contains match
         if (product.category.toLowerCase().includes(category.toLowerCase())) {
           return true;
         }
-        
+
         // No match found for category
         return false;
       }
     }
-    
+
     // Search query filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      
+
       // Search in name
       if (product.name && product.name.toLowerCase().includes(query)) {
         return true;
       }
-      
+
       // Search in category
       if (product.category && product.category.toLowerCase().includes(query)) {
         return true;
       }
-      
+
       // Search in description
-      if (product.description && product.description.toLowerCase().includes(query)) {
+      if (
+        product.description &&
+        product.description.toLowerCase().includes(query)
+      ) {
         return true;
       }
-      
+
       // No match found for search query
       return false;
     }
-    
+
     // Include the product if it passed all filters or no filters are active
     return true;
   });
@@ -332,13 +345,16 @@ const Grid = () => {
 
   // Calculate which products to display based on current page
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const visibleProducts = filteredProducts.slice(startIndex, startIndex + itemsPerPage);
+  const visibleProducts = filteredProducts.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
 
   // Page navigation
   const goToPage = (pageNum) => {
     if (pageNum >= 1 && pageNum <= totalPages) {
       setCurrentPage(pageNum);
-  
+
       setTimeout(() => {
         const gridElement = document.getElementById("grid-section");
         if (gridElement) {
@@ -350,7 +366,7 @@ const Grid = () => {
 
   // Capitalize every word in the item's title
   function capitalizeWords(str) {
-    if (!str) return '';
+    if (!str) return "";
     return str
       .toString()
       .split(" ")
@@ -360,7 +376,7 @@ const Grid = () => {
 
   // Format price as currency
   const formatPrice = (price) => {
-    if (price === undefined || price === null) return 'KSh 0';
+    if (price === undefined || price === null) return "KSh 0";
     return `KSh ${Number(price).toLocaleString()}`;
   };
 
@@ -373,7 +389,7 @@ const Grid = () => {
     const imageUrl = product.images[0];
 
     // Check if URL is valid
-    if (imageUrl && typeof imageUrl === 'string' && imageUrl.trim() !== '') {
+    if (imageUrl && typeof imageUrl === "string" && imageUrl.trim() !== "") {
       return imageUrl;
     }
 
@@ -381,12 +397,12 @@ const Grid = () => {
   };
 
   return (
-    <div id='grid-section' className="paginated-grid-section">
+    <div id="grid-section" className="paginated-grid-section">
       {/* Add back button at the top */}
       <button onClick={handleBack} className="back-button">
         <FiArrowLeft /> Back to Home
       </button>
-      
+
       {/* Add notification component at the top */}
       {notification.visible && (
         <div className="cart-notification">
@@ -395,12 +411,16 @@ const Grid = () => {
             <div className="notification-message">
               <strong>{notification.message}</strong>
               {notification.product && (
-                <span className="product-name">{notification.product.name}</span>
+                <span className="product-name">
+                  {notification.product.name}
+                </span>
               )}
             </div>
             <button
               className="notification-close"
-              onClick={() => setNotification(prev => ({ ...prev, visible: false }))}
+              onClick={() =>
+                setNotification((prev) => ({ ...prev, visible: false }))
+              }
             >
               ×
             </button>
@@ -420,9 +440,14 @@ const Grid = () => {
             <span>{filteredProducts.length} items found</span>
           </>
         ) : filteredProducts.length === products.length ? (
-          <>All Products <span>Find your Signature Scent</span></>
+          <>
+            All Products <span> Choose Your Ideal Tech Companion</span>
+          </>
         ) : (
-          <>Filtered Results <span>({filteredProducts.length} items found)</span></>
+          <>
+            Filtered Results{" "}
+            <span>({filteredProducts.length} items found)</span>
+          </>
         )}
       </h2>
 
@@ -438,64 +463,77 @@ const Grid = () => {
         <>
           <div className="grid-container">
             {visibleProducts.map((product) => (
-              <div className="grid-item" key={product.id}>
+              <div
+                className="grid-item"
+                key={product.id}
+                onClick={() => openProductModal(product)}
+                style={{ cursor: "pointer" }}
+              >
                 {product.isBestSeller && (
                   <div className="bestseller-badge" title="Best Seller">
                     <span className="star">★</span>
                     <span className="bestseller-text">Best Seller</span>
                   </div>
                 )}
-                
+
                 {/* Add out of stock overlay */}
                 {product.inStock === false && (
                   <div className="out-of-stock-overlay">
                     <span>Out of Stock</span>
                   </div>
                 )}
-                
+
                 <div className="cart-options">
                   <div title="Share" onClick={() => handleShare(product)}>
                     <img className="share--icon" src={shareIcon} alt="Share" />
                   </div>
-                  <div 
-                    title={product.inStock === false ? "Out of Stock" : "Add to Cart"} 
-                    onClick={() => product.inStock !== false && quickAddToCart(product, 1)}
-                    className={product.inStock === false ? "disabled-cart-option" : ""}
-                  >
-                    <img className="cart--icon" src={addToCartIcon} alt="Add to cart" />
-                  </div>
                   <div
-                    title="View Details"
-                    onClick={() => openProductModal(product)}
-                    style={{ cursor: 'pointer' }}
+                    title={
+                      product.inStock === false ? "Out of Stock" : "Add to Cart"
+                    }
+                    onClick={() =>
+                      product.inStock !== false && quickAddToCart(product, 1)
+                    }
+                    className={
+                      product.inStock === false ? "disabled-cart-option" : ""
+                    }
                   >
-                    <img className="more--icon" src={seeMoreIcon} alt="View details" />
+                    <img
+                      className="cart--icon"
+                      src={addToCartIcon}
+                      alt="Add to cart"
+                    />
                   </div>
                 </div>
                 <img
+                onClick={() => openProductModal(product)}
                   src={getProductImage(product)}
-                  alt={product.name || 'Product Image'}
+                  alt={product.name || "Product Image"}
                   className="grid-image"
                   onError={(e) => {
                     e.target.onerror = null;
                     e.target.src = defaultImage;
                   }}
                 />
-                <p className="grid-name">{capitalizeWords(product.name)}</p>
-                <p className="category-name">
-                  <img src={categoryIcon} alt="Category" />
-                  {product.category || 'Uncategorized'}
-                </p>
-                
+<p className="grid-name">
+  {(() => {
+    const words = capitalizeWords(product.name).split(" ");
+    return words.length > 15
+      ? words.slice(0, 15).join(" ") + "..."
+      : words.join(" ");
+  })()}
+</p>
                 {/* Add quantities display */}
                 {product.quantities && product.quantities.length > 0 && (
                   <div className="grid-item-quantities">
                     {product.quantities.map((qty, index) => (
-                      <span key={index} className="quantity-chip">{qty}</span>
+                      <span key={index} className="quantity-chip">
+                        {qty}
+                      </span>
                     ))}
                   </div>
                 )}
-                
+
                 <p className="grid-item-price">{formatPrice(product.price)}</p>
               </div>
             ))}
@@ -504,8 +542,13 @@ const Grid = () => {
           {/* Product Detail Modal */}
           {isModalOpen && selectedProduct && (
             <div className="product-modal-overlay" onClick={closeModal}>
-              <div className="product-modal-content" onClick={(e) => e.stopPropagation()}>
-                <button className="modal-close-btn" onClick={closeModal}>×</button>
+              <div
+                className="product-modal-content"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button className="modal-close-btn" onClick={closeModal}>
+                  ×
+                </button>
 
                 <div className="product-modal-container">
                   {/* Left Section - Product Image */}
@@ -527,29 +570,44 @@ const Grid = () => {
 
                   {/* Right Section - Product Details */}
                   <div className="product-modal-details">
-                    <h2 className="product-modal-name">{capitalizeWords(selectedProduct.name)}</h2>
-                    
+                    <h2 className="product-modal-name">
+                      {capitalizeWords(selectedProduct.name)}
+                    </h2>
+
                     <p className="product-modal-category">
                       <span className="category-label">Category: </span>
-                      {selectedProduct.category || 'Uncategorized'}
+                      {selectedProduct.category || "Uncategorized"}
                     </p>
-                    
+
                     {/* Share button */}
-                    <button className="product-share-btn" onClick={() => handleShare(selectedProduct)}>
+                    <button
+                      className="product-share-btn"
+                      onClick={() => handleShare(selectedProduct)}
+                    >
                       <img src={shareIcon} alt="Share" />
                       Share
                     </button>
-                    
+
                     <div className="product-modal-description">
-                      <p>{selectedProduct.description || 'No description available for this product.'}</p>
+                      <p>
+                        {selectedProduct.description ||
+                          "No description available for this product."}
+                      </p>
                     </div>
 
                     <div className="product-modal-quantity">
                       <span>Quantity:</span>
                       <div className="quantity-controls">
-                        <button onClick={() => updateQuantity(quantity - 1)} disabled={quantity <= 1}>-</button>
+                        <button
+                          onClick={() => updateQuantity(quantity - 1)}
+                          disabled={quantity <= 1}
+                        >
+                          -
+                        </button>
                         <span>{quantity}</span>
-                        <button onClick={() => updateQuantity(quantity + 1)}>+</button>
+                        <button onClick={() => updateQuantity(quantity + 1)}>
+                          +
+                        </button>
                       </div>
                     </div>
 
@@ -557,21 +615,27 @@ const Grid = () => {
                       <div className="product-modal-price">
                         {formatPrice(selectedProduct.price)}
                       </div>
-                      <button className="add-to-cart-btn" onClick={handleAddToCart}>
+                      <button
+                        className="add-to-cart-btn"
+                        onClick={handleAddToCart}
+                      >
                         Add to Cart
                       </button>
                     </div>
 
-                    {selectedProduct.quantities && selectedProduct.quantities.length > 0 && (
-                      <div className="product-modal-quantities">
-                        <h4>Available Sizes:</h4>
-                        <div className="quantities-list">
-                          {selectedProduct.quantities.map((qty, index) => (
-                            <span key={index} className="quantity-badge">{qty}</span>
-                          ))}
+                    {selectedProduct.quantities &&
+                      selectedProduct.quantities.length > 0 && (
+                        <div className="product-modal-quantities">
+                          <h4>Available Sizes:</h4>
+                          <div className="quantities-list">
+                            {selectedProduct.quantities.map((qty, index) => (
+                              <span key={index} className="quantity-badge">
+                                {qty}
+                              </span>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
                   </div>
                 </div>
               </div>
