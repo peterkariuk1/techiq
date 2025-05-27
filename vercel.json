@@ -1,15 +1,5 @@
 {
-  "redirects": [
-    {
-      "source": "www.loriskenya.com",
-      "destination": "https://loriskenya.com",
-      "permanent": true
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ]
-}
+    "rewrites": [
+      { "source": "/(.*)", "destination": "/" }
+    ]
+  }
