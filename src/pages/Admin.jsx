@@ -23,7 +23,7 @@ const Admin = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [activeSubTab, setActiveSubTab] = useState("");
   const [openDropdown, setOpenDropdown] = useState(null);
-  const [logoutLoading, setLogoutLoading] = useState(false); // Track logout state
+  const [logoutLoading, setLogoutLoading] = useState(false);
   const [authChecking, setAuthChecking] = useState(true);
   const [authError, setAuthError] = useState(null);
 

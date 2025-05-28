@@ -3,13 +3,18 @@ import { useParams, useSearchParams, Link, useNavigate } from "react-router-dom"
 import { db } from "../../firebase/firebaseConfig.js";
 import { doc, getDoc } from "firebase/firestore";
 import { useCart } from "../context/CartContext.jsx";
-import "../styles/product.css"; // New stylesheet
+import "../styles/product.css";
 import {
   FiChevronLeft, FiChevronRight, FiShare2, FiShoppingCart,
-  FiArrowLeft, FiChevronDown, FiCheckCircle, FiCpu, FiHardDrive
+  FiArrowLeft, FiChevronDown, FiCheckCircle, FiCpu, FiHardDrive,
+  FiBatteryCharging
 } from "react-icons/fi";
 import { TbDeviceLaptop } from "react-icons/tb";
 import { HiOutlineChip, HiOutlineDesktopComputer } from "react-icons/hi";
+import { FaApple, FaBluetooth, FaLinux, FaMicrochip, FaUsb, FaWifi } from "react-icons/fa";
+import { LuHdmiPort } from "react-icons/lu";
+import { FaMicrosoft } from "react-icons/fa6";
+import Logo from "../assets/techiq-logo.png"
 
 const Product = () => {
   // Use both route params and search params
@@ -150,7 +155,7 @@ const Product = () => {
   // Handle back navigation
   const handleBackNavigation = () => {
     if (categoryFromUrl) {
-      navigate(`/?category=${encodeURIComponent(categoryFromUrl)}`);
+      navigate(`/all-products?category=${encodeURIComponent(categoryFromUrl)}`);
     } else {
       navigate(-1);
     }
@@ -175,10 +180,11 @@ const Product = () => {
   };
 
   // Get icon for specification based on label
-  const getSpecIcon = (label) => {
+  const getSpecIcon = (label, value = "") => {
     if (!label) return null;
 
     const lowerLabel = label.toLowerCase();
+    const lowerValue = value.toLowerCase();
 
     if (lowerLabel.includes('processor') || lowerLabel.includes('cpu'))
       return <HiOutlineChip className="techpd-spec-icon" />;
@@ -188,8 +194,31 @@ const Product = () => {
       return <FiHardDrive className="techpd-spec-icon" />;
     if (lowerLabel.includes('display') || lowerLabel.includes('screen'))
       return <HiOutlineDesktopComputer className="techpd-spec-icon" />;
-
-    return null;
+    if (lowerLabel.includes('wifi') || lowerLabel.includes('wi-fi'))
+      return <FaWifi className="techpd-spec-icon" />;
+    if (lowerLabel.includes('bluetooth') || lowerLabel.includes('bt'))
+      return <FaBluetooth className="techpd-spec-icon" />;
+    if (lowerLabel.includes('generation') || lowerLabel.includes('gen'))
+      return <FaMicrochip className="techpd-spec-icon" />;
+    if (lowerLabel.includes('hdmi'))
+      return <LuHdmiPort className="techpd-spec-icon" />;
+    if (lowerLabel.includes('usb'))
+      return <FaUsb className="techpd-spec-icon" />;
+    if (lowerLabel.includes('battery') || lowerLabel.includes('power'))
+      return <FiBatteryCharging className="techpd-spec-icon" />;
+    
+    // Check for operating system mentions
+    if (lowerLabel.includes('operating') || lowerLabel.includes('os')) {
+    // Check the value text to determine which OS icon to show
+    if (lowerValue.includes('mac') || lowerValue.includes('macos') || lowerValue.includes('apple')) {
+      return <FaApple className="techpd-spec-icon" />;
+    } else if (lowerValue.includes('linux') || lowerValue.includes('ubuntu') || lowerValue.includes('debian') || lowerValue.includes('fedora')) {
+      return <FaLinux className="techpd-spec-icon" />;
+    } else {
+      // Default to Windows for all other OS mentions or when not specified
+      return <FaMicrosoft className="techpd-spec-icon" />;
+    }
+  }
   };
 
   if (loading) {
@@ -379,7 +408,7 @@ const Product = () => {
               <div className="techpd-key-specs-list">
                 {parsedSpecs.slice(0, 3).map((spec, index) => (
                   <div key={index} className="techpd-key-spec-item">
-                    {getSpecIcon(spec.label)}
+                    {getSpecIcon(spec.label, spec.value)}
                     <div className="techpd-key-spec-text">
                       {spec.label && <span className="techpd-key-spec-label">{spec.label}</span>}
                       <span className="techpd-key-spec-value">{spec.value}</span>
@@ -458,7 +487,7 @@ const Product = () => {
                         <div key={index} className="techpd-spec-row">
                           {spec.label && (
                             <div className="techpd-spec-label">
-                              {getSpecIcon(spec.label)}
+                              {getSpecIcon(spec.label, spec.value)}
                               {spec.label}
                             </div>
                           )}
