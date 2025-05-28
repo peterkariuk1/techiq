@@ -156,14 +156,6 @@ const Checkout = () => {
     cartItems.forEach((item, index) => {
       message += `${index + 1}) ${item.name} x${item.quantity} - KSh ${(item.price || item.selling_price) * item.quantity}\n`;
     });
-
-    message += `\n*Customer Details*\n`;
-    message += `Name: ${formData.fullName}\n`;
-    message += `Email: ${formData.email}\n`;
-    message += `Phone: ${formData.phone}\n`;
-    if (formData.deliveryNotes) {
-      message += `Notes: ${formData.deliveryNotes}\n`;
-    }
     
     message += `\n*Order Summary*\n`;
     message += `Total: KSh ${total}\n\n`;
@@ -203,7 +195,7 @@ const Checkout = () => {
   };
 
   const handleCheckout = () => {
-    if (!validateForm()) {
+    if (orderMethod === "normal" && !validateForm()) {
       return;
     }
 
@@ -222,18 +214,35 @@ const Checkout = () => {
         alert("Your cart is empty");
         return;
       }
-      setCheckoutStep(2);
+      setCheckoutStep(2); // Go to order method selection
     } else if (checkoutStep === 2) {
+      if (orderMethod === "whatsapp") {
+        // Skip info collection for WhatsApp orders
+        setCheckoutStep(4); // Jump to final review
+      } else {
+        setCheckoutStep(3); // Go to information collection
+      }
+    } else if (checkoutStep === 3) {
+      // Validate form before proceeding to review
       if (!validateForm()) {
         return;
       }
-      setCheckoutStep(3);
+      setCheckoutStep(4); // Go to review
     }
   };
 
   const prevStep = () => {
-    if (checkoutStep > 1) {
-      setCheckoutStep(checkoutStep - 1);
+    if (checkoutStep === 4) {
+      // When going back from review
+      if (orderMethod === "whatsapp") {
+        setCheckoutStep(2); // Go back to order method
+      } else {
+        setCheckoutStep(3); // Go back to information
+      }
+    } else if (checkoutStep === 3) {
+      setCheckoutStep(2); // Go back to order method
+    } else if (checkoutStep === 2) {
+      setCheckoutStep(1); // Go back to cart
     }
   };
 
@@ -305,12 +314,21 @@ const Checkout = () => {
           <div className="tech-step-connector"></div>
           <div className={`tech-step ${checkoutStep >= 2 ? 'active' : ''}`}>
             <div className="tech-step-number">2</div>
-            <span className="tech-step-name">Information</span>
+            <span className="tech-step-name">Order Method</span>
           </div>
           <div className="tech-step-connector"></div>
-          <div className={`tech-step ${checkoutStep >= 3 ? 'active' : ''}`}>
-            <div className="tech-step-number">3</div>
-            <span className="tech-step-name">Review</span>
+          {orderMethod === "normal" && (
+            <>
+              <div className={`tech-step ${checkoutStep >= 3 ? 'active' : ''}`}>
+                <div className="tech-step-number">3</div>
+                <span className="tech-step-name">Information</span>
+              </div>
+              <div className="tech-step-connector"></div>
+            </>
+          )}
+          <div className={`tech-step ${checkoutStep >= 4 ? 'active' : ''}`}>
+            <div className="tech-step-number">{orderMethod === "normal" ? "4" : "3"}</div>
+            <span className="tech-step-name">{orderMethod === "normal" ? "Review" : "WhatsApp Order"}</span>
           </div>
         </div>
         <div className="tech-cart-count">
@@ -396,8 +414,65 @@ const Checkout = () => {
             </div>
           )}
 
-          {/* Step 2: Information */}
+          {/* Step 2: Order Method Selection */}
           {checkoutStep === 2 && (
+            <div className="tech-order-method-section">
+              <div className="tech-section-header">
+                <h2><FiCreditCard /> Select Order Method</h2>
+              </div>
+              
+              <div className="tech-order-options">
+                <div
+                  className={`tech-order-option ${orderMethod === 'normal' ? 'selected' : ''}`}
+                  onClick={() => setOrderMethod('normal')}
+                >
+                  <div className="tech-option-icon">
+                    <FiCreditCard />
+                  </div>
+                  <div className="tech-option-content">
+                    <div className="tech-option-title">Standard Order</div>
+                    <div className="tech-option-desc">Place your order through our website</div>
+                  </div>
+                  <div className="tech-option-check">
+                    {orderMethod === 'normal' && <FiCheckCircle />}
+                  </div>
+                </div>
+
+                <div
+                  className={`tech-order-option ${orderMethod === 'whatsapp' ? 'selected' : ''}`}
+                  onClick={() => setOrderMethod('whatsapp')}
+                >
+                  <div className="tech-option-icon whatsapp">
+                    <RiWhatsappLine />
+                  </div>
+                  <div className="tech-option-content">
+                    <div className="tech-option-title">WhatsApp Order</div>
+                    <div className="tech-option-desc">Place your order via WhatsApp for direct communication</div>
+                  </div>
+                  <div className="tech-option-check">
+                    {orderMethod === 'whatsapp' && <FiCheckCircle />}
+                  </div>
+                </div>
+              </div>
+              
+              {orderMethod === 'whatsapp' && (
+                <div className="tech-whatsapp-info">
+                  <p>
+                    <strong>About WhatsApp Orders:</strong>
+                  </p>
+                  <ul>
+                    <li>Your order details will be sent to our sales team via WhatsApp</li>
+                    <li>You'll provide your contact information directly in the chat</li>
+                    <li>Our team will respond promptly to confirm your order</li>
+                    <li>Payment and delivery details will be arranged through WhatsApp</li>
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Step 3: Information (Only for Standard Orders) */}
+          {checkoutStep === 3 && orderMethod === "normal" && (
             <div className="tech-info-section">
               <div className="tech-section-header">
                 <h2><FiUser /> Contact Information</h2>
@@ -478,35 +553,44 @@ const Checkout = () => {
             </div>
           )}
 
-          {/* Step 3: Review */}
-          {checkoutStep === 3 && (
+          {/* Step 4: Final Review */}
+          {checkoutStep === 4 && (
             <div className="tech-review-section">
               <div className="tech-section-header">
-                <h2><FiCheckCircle /> Review Your Order</h2>
+                <h2>
+                  {orderMethod === "whatsapp" ? (
+                    <><RiWhatsappLine /> WhatsApp Order</>
+                  ) : (
+                    <><FiCheckCircle /> Review Your Order</>
+                  )}
+                </h2>
               </div>
 
               <div className="tech-review-container">
-                <div className="tech-review-info">
-                  <h3>Contact Information</h3>
-                  <div className="tech-info-row">
-                    <span className="tech-info-label"><FiUser /> Name:</span>
-                    <span className="tech-info-value">{formData.fullName}</span>
-                  </div>
-                  <div className="tech-info-row">
-                    <span className="tech-info-label"><FiMail /> Email:</span>
-                    <span className="tech-info-value">{formData.email}</span>
-                  </div>
-                  <div className="tech-info-row">
-                    <span className="tech-info-label"><FiPhone /> Phone:</span>
-                    <span className="tech-info-value">{formData.phone}</span>
-                  </div>
-                  {formData.deliveryNotes && (
+                {/* Only show contact info for standard orders */}
+                {orderMethod === "normal" && (
+                  <div className="tech-review-info">
+                    <h3>Contact Information</h3>
                     <div className="tech-info-row">
-                      <span className="tech-info-label"><FiMessageSquare /> Notes:</span>
-                      <span className="tech-info-value">{formData.deliveryNotes}</span>
+                      <span className="tech-info-label"><FiUser /> Name:</span>
+                      <span className="tech-info-value">{formData.fullName}</span>
                     </div>
-                  )}
-                </div>
+                    <div className="tech-info-row">
+                      <span className="tech-info-label"><FiMail /> Email:</span>
+                      <span className="tech-info-value">{formData.email}</span>
+                    </div>
+                    <div className="tech-info-row">
+                      <span className="tech-info-label"><FiPhone /> Phone:</span>
+                      <span className="tech-info-value">{formData.phone}</span>
+                    </div>
+                    {formData.deliveryNotes && (
+                      <div className="tech-info-row">
+                        <span className="tech-info-label"><FiMessageSquare /> Notes:</span>
+                        <span className="tech-info-value">{formData.deliveryNotes}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <div className="tech-review-items">
                   <h3>Order Items</h3>
@@ -532,50 +616,24 @@ const Checkout = () => {
                   </div>
                 </div>
 
-                <div className="tech-order-method">
-                  <h3>Order Method</h3>
-                  <div className="tech-order-options">
-                    <div
-                      className={`tech-order-option ${orderMethod === 'normal' ? 'selected' : ''}`}
-                      onClick={() => setOrderMethod('normal')}
-                    >
-                      <div className="tech-option-icon">
-                        <FiCreditCard />
-                      </div>
-                      <div className="tech-option-content">
-                        <div className="tech-option-title">Standard Order</div>
-                        <div className="tech-option-desc">Place your order through our website</div>
-                      </div>
-                      <div className="tech-option-check">
-                        {orderMethod === 'normal' && <FiCheckCircle />}
-                      </div>
-                    </div>
-
-                    <div
-                      className={`tech-order-option ${orderMethod === 'whatsapp' ? 'selected' : ''}`}
-                      onClick={() => setOrderMethod('whatsapp')}
-                    >
-                      <div className="tech-option-icon whatsapp">
+                {orderMethod === "whatsapp" && (
+                  <div className="tech-whatsapp-final-info">
+                    <h3>About Your WhatsApp Order</h3>
+                    <p>
+                      When you click "Order via WhatsApp", your cart details will be forwarded to our sales team on WhatsApp.
+                      You'll need to provide your contact information and delivery details directly in the chat.
+                    </p>
+                    <div className="tech-whatsapp-contact">
+                      <div className="tech-contact-icon">
                         <RiWhatsappLine />
                       </div>
-                      <div className="tech-option-content">
-                        <div className="tech-option-title">WhatsApp Order</div>
-                        <div className="tech-option-desc">Place your order via WhatsApp for direct communication</div>
-                      </div>
-                      <div className="tech-option-check">
-                        {orderMethod === 'whatsapp' && <FiCheckCircle />}
+                      <div className="tech-contact-details">
+                        <span>TechIQ Solutions</span>
+                        <span>+254 799 748 449</span>
                       </div>
                     </div>
                   </div>
-
-                  {orderMethod === 'whatsapp' && (
-                    <div className="tech-whatsapp-info">
-                      <p>
-                        Your order details will be sent via WhatsApp for direct communication with our team.
-                      </p>
-                    </div>
-                  )}
-                </div>
+                )}
               </div>
             </div>
           )}
@@ -587,8 +645,13 @@ const Checkout = () => {
               </button>
             )}
             
-            {checkoutStep < 3 ? (
-              <button className="tech-next-button" onClick={nextStep} disabled={cartItems.length === 0 && checkoutStep === 1}>
+            {/* Show different buttons based on step and order method */}
+            {checkoutStep < 4 ? (
+              <button 
+                className="tech-next-button" 
+                onClick={nextStep} 
+                disabled={cartItems.length === 0 && checkoutStep === 1}
+              >
                 Continue <FiChevronRight />
               </button>
             ) : (

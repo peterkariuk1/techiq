@@ -1,25 +1,22 @@
 import "../styles/grid.css";
 import React, { useState, useEffect } from "react";
-import categoryIcon from "../assets/category-icon.png";
+import { useNavigate } from "react-router-dom"; // Add this import
 import shareIcon from "../assets/share-icon.png";
 import addToCartIcon from "../assets/bag-icon.png";
-import seeMoreIcon from "../assets/see-more.png";
 import { useCart } from "../context/CartContext.jsx";
 import { db } from "../../firebase/firebaseConfig.js";
 import { collection, getDocs, query, where } from "firebase/firestore";
 
 const MenPerfumes = () => {
+  // Add navigate hook
+  const navigate = useNavigate();
+
   // State for products
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [visibleCount, setVisibleCount] = useState(8);
   const [visibleProducts, setVisibleProducts] = useState([]);
   const [isAllLoaded, setIsAllLoaded] = useState(false);
-
-  // Modal state
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [quantity, setQuantity] = useState(1);
 
   // Notification state
   const [notification, setNotification] = useState({
@@ -38,7 +35,7 @@ const MenPerfumes = () => {
 
         // Create a query against the "products" collection where gender is "men"
         const productsRef = collection(db, "products");
-        const menQuery = query(productsRef, where("gender", "==", "men"));
+        const menQuery = query(productsRef, where("category", "==", "Accessories"));
 
         const querySnapshot = await getDocs(menQuery);
 
@@ -52,13 +49,13 @@ const MenPerfumes = () => {
         setVisibleProducts(menProducts.slice(0, visibleCount));
         setIsAllLoaded(visibleCount >= menProducts.length);
 
-        console.log("Total Men's Products:", menProducts.length);
+        console.log("Total Accessories Products:", menProducts.length);
         console.log(
-          "Visible Men's Products Count:",
+          "Visible Accessories Products Count:",
           Math.min(visibleCount, menProducts.length)
         );
       } catch (error) {
-        console.error("Error fetching men's products:", error);
+        console.error("Error fetching accessories products:", error);
       } finally {
         setLoading(false);
       }
@@ -100,65 +97,43 @@ const MenPerfumes = () => {
       setNotification((prev) => ({ ...prev, visible: false }));
     }, 3000);
   };
-
-  // Function to open modal with product details
-  const openProductModal = (product) => {
-    setSelectedProduct(product);
-    setQuantity(1); // Reset quantity when opening a new product
-    setIsModalOpen(true);
-    // Prevent scrolling on body when modal is open
-    document.body.style.overflow = "hidden";
-  };
-
-  // Function to close modal
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedProduct(null);
-    // Re-enable scrolling
-    document.body.style.overflow = "auto";
-  };
-
-  // Handle quantity change
-  const updateQuantity = (newQty) => {
-    if (newQty >= 1) {
-      setQuantity(newQty);
+  // Navigate to product details page
+  const navigateToProductDetails = (product, event) => {
+    // Prevent event bubbling if this was triggered from a nested element
+    if (event) {
+      event.stopPropagation();
     }
-  };
-
-  // Add to cart function
-  const handleAddToCart = () => {
-    if (selectedProduct && selectedProduct.inStock !== false) {
-      // Add the selected product with quantity
-      addToCart(selectedProduct, quantity);
-
-      // Show notification
-      showNotification(selectedProduct, quantity);
-
-      // Close the modal
-      closeModal();
-    }
+    navigate(`/product?category=${encodeURIComponent(product.category || "Accessories")}&pid=${product.id}`);
   };
 
   // Quick add to cart function
-  const quickAddToCart = (product, qty = 1) => {
+  const quickAddToCart = (product, qty = 1, event) => {
+    // Prevent navigation when clicking the add to cart button
+    if (event) {
+      event.stopPropagation();
+    }
     addToCart(product, qty);
     showNotification(product, qty);
   };
 
   // Share product function
-  const handleShare = async (product) => {
+  const handleShare = async (product, event) => {
+    // Prevent navigation when clicking the share button
+    if (event) {
+      event.stopPropagation();
+    }
+
     // Construct a shareable URL with the new format
-    const productUrl = `${
-      window.location.origin
-    }/product/?category=${encodeURIComponent(
-      product.category || "Uncategorized"
-    )}&pid=${product.id}`;
+    const productUrl = `${window.location.origin
+      }/product/?category=${encodeURIComponent(
+        product.category || "Accessories"
+      )}&pid=${product.id}`;
 
     // Product details for sharing
     const title = capitalizeWords(product.name);
     const text =
       product.description ||
-      `Check out this ${product.category || ""} perfume from Loris Kenya!`;
+      `Check out this ${product.category || ""} from TechIQ!`;
 
     // Check if the Web Share API is available
     if (navigator.share) {
@@ -209,7 +184,7 @@ const MenPerfumes = () => {
 
   // Format price as currency
   const formatPrice = (price) => {
-    if (price === undefined || price === null) return "KSh 0";
+    if (price === undefined || price === null || price < 0) return "KSh 0";
     return `KSh ${Number(price).toLocaleString()}`;
   };
 
@@ -220,7 +195,7 @@ const MenPerfumes = () => {
   const getProductImage = (product) => {
     // Try different possible image field names
     const imageUrl =
-      product.images[0] ||
+      (product.images && product.images[0]) ||
       product.image_url ||
       product.img ||
       product.thumbnail ||
@@ -228,11 +203,6 @@ const MenPerfumes = () => {
 
     // Check if URL is valid
     if (imageUrl && typeof imageUrl === "string" && imageUrl.trim() !== "") {
-      // If it's a relative path, convert to absolute URL
-      if (imageUrl.startsWith("/")) {
-        return `https://pos.loriskenya.com${imageUrl}`;
-      }
-      // If it's already a full URL, use it
       return imageUrl;
     }
 
@@ -242,13 +212,13 @@ const MenPerfumes = () => {
   if (loading) {
     return (
       <section className="paginated-grid-section">
-        <p className="loading-text">Loading men's perfumes...</p>
+        <p className="loading-text">Loading featured accessories...</p>
       </section>
     );
   }
 
   return (
-    <section className="paginated-grid-section" id="men">
+    <section className="paginated-grid-section" id="accessories">
       {/* Add notification component at the top */}
       {notification.visible && (
         <div className="cart-notification">
@@ -283,7 +253,12 @@ const MenPerfumes = () => {
       ) : (
         <div className="grid-container">
           {visibleProducts.map((product) => (
-            <div className="grid-item" key={product.id}>
+            <div
+              className="grid-item"
+              key={product.id}
+              onClick={() => navigateToProductDetails(product)}
+              style={{ cursor: "pointer" }}
+            >
               {/* Add out of stock overlay */}
               {product.inStock === false && (
                 <div className="out-of-stock-overlay">
@@ -291,15 +266,15 @@ const MenPerfumes = () => {
                 </div>
               )}
               <div className="cart-options">
-                <div title="Share" onClick={() => handleShare(product)}>
+                <div title="Share" onClick={(e) => handleShare(product, e)}>
                   <img className="share--icon" src={shareIcon} alt="Share" />
                 </div>
                 <div
                   title={
                     product.inStock === false ? "Out of Stock" : "Add to Cart"
                   }
-                  onClick={() =>
-                    product.inStock !== false && quickAddToCart(product, 1)
+                  onClick={(e) =>
+                    product.inStock !== false && quickAddToCart(product, 1, e)
                   }
                   className={
                     product.inStock === false ? "disabled-cart-option" : ""
@@ -313,7 +288,6 @@ const MenPerfumes = () => {
                 </div>
               </div>
               <img
-              onClick={() => openProductModal(product)}
                 src={getProductImage(product)}
                 alt={product.name || "Product Image"}
                 className="grid-image"
@@ -322,8 +296,14 @@ const MenPerfumes = () => {
                   e.target.src = defaultImage;
                 }}
               />
-              <p className="grid-name">{capitalizeWords(product.name)}</p>
-             
+              <p className="grid-name">
+                {(() => {
+                  const words = capitalizeWords(product.name).split(" ");
+                  return words.length > 15
+                    ? words.slice(0, 15).join(" ") + "..."
+                    : words.join(" ");
+                })()}
+              </p>
 
               {/* Add quantities display */}
               {product.quantities && product.quantities.length > 0 && (
@@ -339,102 +319,6 @@ const MenPerfumes = () => {
               <p className="grid-item-price">{formatPrice(product.price)}</p>
             </div>
           ))}
-        </div>
-      )}
-
-      {/* Product Detail Modal */}
-      {isModalOpen && selectedProduct && (
-        <div className="product-modal-overlay" onClick={closeModal}>
-          <div
-            className="product-modal-content"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button className="modal-close-btn" onClick={closeModal}>
-              ×
-            </button>
-
-            <div className="product-modal-container">
-              {/* Left Section - Product Image */}
-              <div className="product-modal-image">
-                <img
-                  src={getProductImage(selectedProduct)}
-                  alt={selectedProduct.name}
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = defaultImage;
-                  }}
-                />
-              </div>
-
-              {/* Right Section - Product Details */}
-              <div className="product-modal-details">
-                <h2 className="product-modal-name">
-                  {capitalizeWords(selectedProduct.name)}
-                </h2>
-
-                <p className="product-modal-category">
-                  <span className="category-label">Category: </span>
-                  {selectedProduct.category || "Uncategorized"}
-                </p>
-
-                {/* Add quantities display in modal */}
-                {selectedProduct.quantities &&
-                  selectedProduct.quantities.length > 0 && (
-                    <div className="product-modal-quantities">
-                      <h4>Available Sizes:</h4>
-                      <div className="quantities-list">
-                        {selectedProduct.quantities.map((qty, index) => (
-                          <span key={index} className="quantity-badge">
-                            {qty}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                {/* Share button */}
-                <button
-                  className="product-share-btn"
-                  onClick={() => handleShare(selectedProduct)}
-                >
-                  <img src={shareIcon} alt="Share" />
-                  Share
-                </button>
-
-                <div className="product-modal-description">
-                  <p>
-                    {selectedProduct.description ||
-                      "No description available for this product."}
-                  </p>
-                </div>
-
-                <div className="product-modal-quantity">
-                  <span>Quantity:</span>
-                  <div className="quantity-controls">
-                    <button
-                      onClick={() => updateQuantity(quantity - 1)}
-                      disabled={quantity <= 1}
-                    >
-                      -
-                    </button>
-                    <span>{quantity}</span>
-                    <button onClick={() => updateQuantity(quantity + 1)}>
-                      +
-                    </button>
-                  </div>
-                </div>
-
-                <div className="product-modal-purchase">
-                  <div className="product-modal-price">
-                    {formatPrice(selectedProduct.price)}
-                  </div>
-                  <button className="add-to-cart-btn" onClick={handleAddToCart}>
-                    Add to Cart
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       )}
 

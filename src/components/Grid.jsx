@@ -1,6 +1,5 @@
 import "../styles/grid.css";
 import { useState, useEffect } from "react";
-import categoryIcon from "../assets/category-icon.png";
 import shareIcon from "../assets/share-icon.png";
 import addToCartIcon from "../assets/bag-icon.png";
 import { db } from "../../firebase/firebaseConfig.js";
@@ -15,11 +14,6 @@ const Grid = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const itemsPerPage = 18;
-
-  // Modal state
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [quantity, setQuantity] = useState(1);
 
   // Notification state
   const [notification, setNotification] = useState({
@@ -66,52 +60,32 @@ const Grid = () => {
     }, 3000);
   };
 
-  // Function to open modal with product details
-  const openProductModal = (product) => {
-    setSelectedProduct(product);
-    setQuantity(1); // Reset quantity when opening a new product
-    setIsModalOpen(true);
-    // Prevent scrolling on body when modal is open
-    document.body.style.overflow = "hidden";
-  };
-
-  // Function to close modal
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedProduct(null);
-    // Re-enable scrolling
-    document.body.style.overflow = "auto";
-  };
-
-  // Handle quantity change
-  const updateQuantity = (newQty) => {
-    if (newQty >= 1) {
-      setQuantity(newQty);
+  // Navigate to product details page
+  const navigateToProductDetails = (product, event) => {
+    // Prevent event bubbling if this was triggered from a nested element
+    if (event) {
+      event.stopPropagation();
     }
-  };
-
-  // Add to cart function
-  const handleAddToCart = () => {
-    if (selectedProduct && selectedProduct.inStock !== false) {
-      // Add the selected product with quantity
-      addToCart(selectedProduct, quantity);
-
-      // Show notification
-      showNotification(selectedProduct, quantity);
-
-      // Close the modal
-      closeModal();
-    }
+    navigate(`/product?category=${encodeURIComponent(product.category || "Uncategorized")}&pid=${product.id}`);
   };
 
   // Quick add to cart function
-  const quickAddToCart = (product, qty = 1) => {
+  const quickAddToCart = (product, qty = 1, event) => {
+    // Prevent navigation when clicking the add to cart button
+    if (event) {
+      event.stopPropagation();
+    }
     addToCart(product, qty);
     showNotification(product, qty);
   };
 
   // Share product function
-  const handleShare = async (product) => {
+  const handleShare = async (product, event) => {
+    // Prevent navigation when clicking the share button
+    if (event) {
+      event.stopPropagation();
+    }
+
     // Construct a shareable URL with the new format
     const productUrl = `${
       window.location.origin
@@ -123,7 +97,7 @@ const Grid = () => {
     const title = capitalizeWords(product.name);
     const text =
       product.description ||
-      `Check out this ${product.category || ""} perfume from Techiq Solutions!`;
+      `Check out this ${product.category || ""} product from TechIQ!`;
 
     // Check if the Web Share API is available
     if (navigator.share) {
@@ -376,7 +350,7 @@ const Grid = () => {
 
   // Format price as currency
   const formatPrice = (price) => {
-    if (price === undefined || price === null) return "KSh 0";
+    if (price === undefined || price === null || price < 0) return "KSh 0";
     return `KSh ${Number(price).toLocaleString()}`;
   };
 
@@ -386,7 +360,7 @@ const Grid = () => {
   // Get product image with multiple possible field names
   const getProductImage = (product) => {
     // Try different possible image field names
-    const imageUrl = product.images[0];
+    const imageUrl = product.images && product.images.length > 0 ? product.images[0] : null;
 
     // Check if URL is valid
     if (imageUrl && typeof imageUrl === "string" && imageUrl.trim() !== "") {
@@ -466,7 +440,7 @@ const Grid = () => {
               <div
                 className="grid-item"
                 key={product.id}
-                onClick={() => openProductModal(product)}
+                onClick={() => navigateToProductDetails(product)}
                 style={{ cursor: "pointer" }}
               >
                 {product.isBestSeller && (
@@ -484,15 +458,18 @@ const Grid = () => {
                 )}
 
                 <div className="cart-options">
-                  <div title="Share" onClick={() => handleShare(product)}>
+                  <div 
+                    title="Share" 
+                    onClick={(e) => handleShare(product, e)}
+                  >
                     <img className="share--icon" src={shareIcon} alt="Share" />
                   </div>
                   <div
                     title={
                       product.inStock === false ? "Out of Stock" : "Add to Cart"
                     }
-                    onClick={() =>
-                      product.inStock !== false && quickAddToCart(product, 1)
+                    onClick={(e) => 
+                      product.inStock !== false && quickAddToCart(product, 1, e)
                     }
                     className={
                       product.inStock === false ? "disabled-cart-option" : ""
@@ -506,7 +483,6 @@ const Grid = () => {
                   </div>
                 </div>
                 <img
-                onClick={() => openProductModal(product)}
                   src={getProductImage(product)}
                   alt={product.name || "Product Image"}
                   className="grid-image"
@@ -515,14 +491,14 @@ const Grid = () => {
                     e.target.src = defaultImage;
                   }}
                 />
-<p className="grid-name">
-  {(() => {
-    const words = capitalizeWords(product.name).split(" ");
-    return words.length > 15
-      ? words.slice(0, 15).join(" ") + "..."
-      : words.join(" ");
-  })()}
-</p>
+                <p className="grid-name">
+                  {(() => {
+                    const words = capitalizeWords(product.name).split(" ");
+                    return words.length > 15
+                      ? words.slice(0, 15).join(" ") + "..."
+                      : words.join(" ");
+                  })()}
+                </p>
                 {/* Add quantities display */}
                 {product.quantities && product.quantities.length > 0 && (
                   <div className="grid-item-quantities">
@@ -539,108 +515,7 @@ const Grid = () => {
             ))}
           </div>
 
-          {/* Product Detail Modal */}
-          {isModalOpen && selectedProduct && (
-            <div className="product-modal-overlay" onClick={closeModal}>
-              <div
-                className="product-modal-content"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <button className="modal-close-btn" onClick={closeModal}>
-                  ×
-                </button>
-
-                <div className="product-modal-container">
-                  {/* Left Section - Product Image */}
-                  <div className="product-modal-image">
-                    {selectedProduct.isBestSeller && (
-                      <div className="modal-bestseller-badge">
-                        <span className="star">★</span> Best Seller
-                      </div>
-                    )}
-                    <img
-                      src={getProductImage(selectedProduct)}
-                      alt={selectedProduct.name}
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = defaultImage;
-                      }}
-                    />
-                  </div>
-
-                  {/* Right Section - Product Details */}
-                  <div className="product-modal-details">
-                    <h2 className="product-modal-name">
-                      {capitalizeWords(selectedProduct.name)}
-                    </h2>
-
-                    <p className="product-modal-category">
-                      <span className="category-label">Category: </span>
-                      {selectedProduct.category || "Uncategorized"}
-                    </p>
-
-                    {/* Share button */}
-                    <button
-                      className="product-share-btn"
-                      onClick={() => handleShare(selectedProduct)}
-                    >
-                      <img src={shareIcon} alt="Share" />
-                      Share
-                    </button>
-
-                    <div className="product-modal-description">
-                      <p>
-                        {selectedProduct.description ||
-                          "No description available for this product."}
-                      </p>
-                    </div>
-
-                    <div className="product-modal-quantity">
-                      <span>Quantity:</span>
-                      <div className="quantity-controls">
-                        <button
-                          onClick={() => updateQuantity(quantity - 1)}
-                          disabled={quantity <= 1}
-                        >
-                          -
-                        </button>
-                        <span>{quantity}</span>
-                        <button onClick={() => updateQuantity(quantity + 1)}>
-                          +
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="product-modal-purchase">
-                      <div className="product-modal-price">
-                        {formatPrice(selectedProduct.price)}
-                      </div>
-                      <button
-                        className="add-to-cart-btn"
-                        onClick={handleAddToCart}
-                      >
-                        Add to Cart
-                      </button>
-                    </div>
-
-                    {selectedProduct.quantities &&
-                      selectedProduct.quantities.length > 0 && (
-                        <div className="product-modal-quantities">
-                          <h4>Available Sizes:</h4>
-                          <div className="quantities-list">
-                            {selectedProduct.quantities.map((qty, index) => (
-                              <span key={index} className="quantity-badge">
-                                {qty}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+          {/* Remove the entire Product Detail Modal */}
 
           <div className="pagination">
             <button

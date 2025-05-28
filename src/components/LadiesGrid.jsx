@@ -1,25 +1,22 @@
 import "../styles/grid.css";
 import React, { useState, useEffect } from "react";
-import categoryIcon from "../assets/category-icon.png";
+import { useNavigate } from "react-router-dom"; // Add this import
 import shareIcon from "../assets/share-icon.png";
 import addToCartIcon from "../assets/bag-icon.png";
-import seeMoreIcon from "../assets/see-more.png";
 import { useCart } from "../context/CartContext.jsx";
 import { db } from "../../firebase/firebaseConfig.js";
 import { collection, getDocs, query, where } from "firebase/firestore";
 
 const LadiesGrid = () => {
+  // Add navigate hook
+  const navigate = useNavigate();
+  
   // State for products
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [visibleCount, setVisibleCount] = useState(8);
   const [visibleProducts, setVisibleProducts] = useState([]);
   const [isAllLoaded, setIsAllLoaded] = useState(false);
-
-  // Modal state
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [quantity, setQuantity] = useState(1);
 
   // Notification state
   const [notification, setNotification] = useState({
@@ -30,41 +27,41 @@ const LadiesGrid = () => {
 
   const { addToCart } = useCart();
 
-  // Fetch women's products from Firestore
+  // Fetch laptops from Firestore
   useEffect(() => {
-    const fetchWomenProducts = async () => {
+    const fetchLaptops = async () => {
       try {
         setLoading(true);
 
-        // Create a query against the "products" collection where gender is "women"
+        // Create a query against the "products" collection where category is "Laptops"
         const productsRef = collection(db, "products");
-        const womenQuery = query(productsRef, where("gender", "==", "women"));
+        const laptopsQuery = query(productsRef, where("category", "==", "Laptops"));
 
-        const querySnapshot = await getDocs(womenQuery);
+        const querySnapshot = await getDocs(laptopsQuery);
 
         // Process and set products
-        const womenProducts = querySnapshot.docs.map((doc) => ({
+        const laptopProducts = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
 
-        setProducts(womenProducts);
-        setVisibleProducts(womenProducts.slice(0, visibleCount));
-        setIsAllLoaded(visibleCount >= womenProducts.length);
+        setProducts(laptopProducts);
+        setVisibleProducts(laptopProducts.slice(0, visibleCount));
+        setIsAllLoaded(visibleCount >= laptopProducts.length);
 
-        console.log("Total Women's Products:", womenProducts.length);
+        console.log("Total Laptop Products:", laptopProducts.length);
         console.log(
-          "Visible Women's Products Count:",
-          Math.min(visibleCount, womenProducts.length)
+          "Visible Laptop Products Count:",
+          Math.min(visibleCount, laptopProducts.length)
         );
       } catch (error) {
-        console.error("Error fetching women's products:", error);
+        console.error("Error fetching laptop products:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchWomenProducts();
+    fetchLaptops();
   }, []);
 
   // Update visible products when visibleCount changes
@@ -101,42 +98,9 @@ const LadiesGrid = () => {
     }, 3000);
   };
 
-  // Function to open modal with product details
-  const openProductModal = (product) => {
-    setSelectedProduct(product);
-    setQuantity(1); // Reset quantity when opening a new product
-    setIsModalOpen(true);
-    // Prevent scrolling on body when modal is open
-    document.body.style.overflow = "hidden";
-  };
-
-  // Function to close modal
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedProduct(null);
-    // Re-enable scrolling
-    document.body.style.overflow = "auto";
-  };
-
-  // Handle quantity change
-  const updateQuantity = (newQty) => {
-    if (newQty >= 1) {
-      setQuantity(newQty);
-    }
-  };
-
-  // Add to cart function
-  const handleAddToCart = () => {
-    if (selectedProduct && selectedProduct.inStock !== false) {
-      // Add the selected product with quantity
-      addToCart(selectedProduct, quantity);
-
-      // Show notification
-      showNotification(selectedProduct, quantity);
-
-      // Close the modal
-      closeModal();
-    }
+  // Navigate to product details page
+  const navigateToProductDetails = (product) => {
+    navigate(`/product?category=${encodeURIComponent(product.category || "Uncategorized")}&pid=${product.id}`);
   };
 
   // Quick add to cart function
@@ -158,7 +122,7 @@ const LadiesGrid = () => {
     const title = capitalizeWords(product.name);
     const text =
       product.description ||
-      `Check out this ${product.category || ""} perfume from Loris Kenya!`;
+      `Check out this ${product.category || ""} from TechIQ!`;
 
     // Check if the Web Share API is available
     if (navigator.share) {
@@ -209,7 +173,7 @@ const LadiesGrid = () => {
 
   // Format price as currency
   const formatPrice = (price) => {
-    if (price === undefined || price === null) return "KSh 0";
+    if (price === undefined || price === null || price < 0) return "KSh 0";
     return `KSh ${Number(price).toLocaleString()}`;
   };
 
@@ -220,7 +184,7 @@ const LadiesGrid = () => {
   const getProductImage = (product) => {
     // Try different possible image field names
     const imageUrl =
-      product.images[0] ||
+      (product.images && product.images[0]) ||
       product.image_url ||
       product.img ||
       product.thumbnail ||
@@ -230,7 +194,7 @@ const LadiesGrid = () => {
     if (imageUrl && typeof imageUrl === "string" && imageUrl.trim() !== "") {
       // If it's a relative path, convert to absolute URL
       if (imageUrl.startsWith("/")) {
-        return `https://pos.loriskenya.com${imageUrl}`;
+        return `${imageUrl}`;
       }
       // If it's already a full URL, use it
       return imageUrl;
@@ -242,13 +206,13 @@ const LadiesGrid = () => {
   if (loading) {
     return (
       <section className="paginated-grid-section">
-        <p className="loading-text">Loading women's perfumes...</p>
+        <p className="loading-text">Loading featured laptops...</p>
       </section>
     );
   }
 
   return (
-    <section className="paginated-grid-section" id="women">
+    <section className="paginated-grid-section" id="laptops">
       {/* Add notification component at the top */}
       {notification.visible && (
         <div className="cart-notification">
@@ -313,7 +277,7 @@ const LadiesGrid = () => {
                 </div>
               </div>
               <img
-              onClick={() => openProductModal(product)}
+                onClick={() => navigateToProductDetails(product)} // Update to use navigation
                 src={getProductImage(product)}
                 alt={product.name || "Product Image"}
                 className="grid-image"
@@ -322,8 +286,17 @@ const LadiesGrid = () => {
                   e.target.src = defaultImage;
                 }}
               />
-              <p className="grid-name">{capitalizeWords(product.name)}</p>
-             
+              <p 
+                className="grid-name"
+                onClick={() => navigateToProductDetails(product)} // Make product name clickable too
+              >
+                {(() => {
+                  const words = capitalizeWords(product.name).split(" ");
+                  return words.length > 15
+                    ? words.slice(0, 18).join(" ") + "..."
+                    : words.join(" ");
+                })()}
+              </p>
 
               {/* Add quantities display */}
               {product.quantities && product.quantities.length > 0 && (
@@ -339,102 +312,6 @@ const LadiesGrid = () => {
               <p className="grid-item-price">{formatPrice(product.price)}</p>
             </div>
           ))}
-        </div>
-      )}
-
-      {/* Product Detail Modal */}
-      {isModalOpen && selectedProduct && (
-        <div className="product-modal-overlay" onClick={closeModal}>
-          <div
-            className="product-modal-content"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button className="modal-close-btn" onClick={closeModal}>
-              ×
-            </button>
-
-            <div className="product-modal-container">
-              {/* Left Section - Product Image */}
-              <div className="product-modal-image">
-                <img
-                  src={getProductImage(selectedProduct)}
-                  alt={selectedProduct.name}
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = defaultImage;
-                  }}
-                />
-              </div>
-
-              {/* Right Section - Product Details */}
-              <div className="product-modal-details">
-                <h2 className="product-modal-name">
-                  {capitalizeWords(selectedProduct.name)}
-                </h2>
-
-                <p className="product-modal-category">
-                  <span className="category-label">Category: </span>
-                  {selectedProduct.category || "Uncategorized"}
-                </p>
-
-                {/* Add quantities display in modal */}
-                {selectedProduct.quantities &&
-                  selectedProduct.quantities.length > 0 && (
-                    <div className="product-modal-quantities">
-                      <h4>Available Sizes:</h4>
-                      <div className="quantities-list">
-                        {selectedProduct.quantities.map((qty, index) => (
-                          <span key={index} className="quantity-badge">
-                            {qty}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                {/* Share button */}
-                <button
-                  className="product-share-btn"
-                  onClick={() => handleShare(selectedProduct)}
-                >
-                  <img src={shareIcon} alt="Share" />
-                  Share
-                </button>
-
-                <div className="product-modal-description">
-                  <p>
-                    {selectedProduct.description ||
-                      "No description available for this product."}
-                  </p>
-                </div>
-
-                <div className="product-modal-quantity">
-                  <span>Quantity:</span>
-                  <div className="quantity-controls">
-                    <button
-                      onClick={() => updateQuantity(quantity - 1)}
-                      disabled={quantity <= 1}
-                    >
-                      -
-                    </button>
-                    <span>{quantity}</span>
-                    <button onClick={() => updateQuantity(quantity + 1)}>
-                      +
-                    </button>
-                  </div>
-                </div>
-
-                <div className="product-modal-purchase">
-                  <div className="product-modal-price">
-                    {formatPrice(selectedProduct.price)}
-                  </div>
-                  <button className="add-to-cart-btn" onClick={handleAddToCart}>
-                    Add to Cart
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       )}
 
